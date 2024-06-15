@@ -1,7 +1,7 @@
 import React from 'react'
 import { useUser } from '../context/UserContext'
 import { Navigate, Outlet } from 'react-router-dom'
-import LogoutButton from '../components/logout/LogoutButton'
+import LogoutButton from '../custom-components/logout-button/LogoutButton'
 
 const ProtectedAdminRoutes = () => {
     const {user} = useUser()

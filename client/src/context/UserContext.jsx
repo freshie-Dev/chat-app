@@ -18,7 +18,6 @@ const UserProvider = ({ children }) => {
 
     } catch (error) {
         console.log(error)
-      setError('Invalid username or password');
     }
   }
 

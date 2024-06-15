@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    margin: 0px;
+    padding: 0px;
+    background-color: #EEEEEE;
+}
+
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+/* #root {
+} */
+
+h1 {
+    font-size: clamp(1.8rem, 0.5132rem + 3.6842vw, 3rem);
+}
+
+label {
+    font-size: clamp(0.75rem, 0.5921rem + 0.7895vw, .9);
+}
+
+p {
+    font-size: clamp(0.75rem, 0.5921rem + 0.7895vw, .9);
+}
+
+h4 {
+    font-size: clamp(0.95, 0.7533rem + 0.9211vw, 1.15);
+}
+
+.caption {
+    font-size: clamp(0.75rem, 0.59rem + 0.5263vw, 1rem);
+}
