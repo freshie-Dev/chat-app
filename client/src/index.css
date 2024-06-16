@@ -8,6 +8,10 @@ body {
     background-color: #EEEEEE;
     color: white;
     font-family: "Ubuntu", sans-serif;
+    --c1: #3B3B3B;
+    --c2: #cf3f0a;
+    --c3: #DC5F00;
+    --c4: #EEEEEE ;
 }
 
 * {

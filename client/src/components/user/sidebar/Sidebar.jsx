@@ -28,9 +28,8 @@ const Sidebar = () => {
 
     return (
         <div className='flex flex-col  h-full'>
-            <div className=' h-full'>
-                <h2 className='px-4'>Contacts</h2>
-                <div className='py-2 pr-3 pl-4 relative  '>
+                <div className='py-2 pr-3 pl-4 relative h-full '>
+                <p className='text-[2rem]'>Contacts</p>
                     {sortedContacts.map((contact, index) => {
                         return (
                             <div
@@ -58,8 +57,7 @@ const Sidebar = () => {
                         );
                     })}
                 </div>
-            </div>
-            <div className='flex justify-center items-center gap-3 bg-pink-600  py-4'>
+            <div className='flex justify-center items-center gap-3 bg-c2  py-4'>
                 <img width={65} src={user.avatar} alt="" />
                 <p className='font-bold text-[1.6rem]'>Ahmad</p>
                 {/* {user.username} */}

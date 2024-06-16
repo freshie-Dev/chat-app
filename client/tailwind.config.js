@@ -20,7 +20,7 @@ export default {
       colors: {
         // Add your custom colors here
         c1: '#3B3B3B ',
-        c2: '#CF0A0A',
+        c2: '#cf3f0a',
         c3: '#DC5F00',
         c4: '#EEEEEE',
         c5: '#3B3B3B ',

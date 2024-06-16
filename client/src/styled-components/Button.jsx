@@ -30,6 +30,7 @@ const Button = styled.button`
   cursor: ${(props) => props.cursor || 'pointer'};
   transition: ${(props) => props.transition || 'background-color 0.2s ease-in'};
   ${(props) => (props.primary ? primaryStyles : secondaryStyles)};
+  text-align: center;
 `;
 
 
