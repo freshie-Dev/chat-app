@@ -1,7 +1,6 @@
 import React from 'react'
 import { useUser } from '../context/UserContext'
 import { Navigate, Outlet } from 'react-router-dom'
-import LogoutButton from '../custom-components/logout-button/LogoutButton'
 
 const ProtectedAdminRoutes = () => {
     const {user} = useUser()
@@ -14,7 +13,6 @@ const ProtectedAdminRoutes = () => {
         if (userInfo.type === "admin") {
           return (
             <>
-              <LogoutButton/>
               <Outlet />
             </>
           )

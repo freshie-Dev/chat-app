@@ -6,19 +6,25 @@ body {
     margin: 0px;
     padding: 0px;
     background-color: #EEEEEE;
+    color: white;
+    font-family: "Ubuntu", sans-serif;
 }
 
 * {
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
+    transition: all 0.1s ease-in-out;
+
 }
 
-/* #root {
-} */
+
 
 h1 {
     font-size: clamp(1.8rem, 0.5132rem + 3.6842vw, 3rem);
+}
+h2 {
+    font-size: clamp(1.5rem, 0.5132rem + 3.6842vw, 2.7rem);
 }
 
 label {

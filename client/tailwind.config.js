@@ -23,6 +23,7 @@ export default {
         c2: '#CF0A0A',
         c3: '#DC5F00',
         c4: '#EEEEEE',
+        c5: '#3B3B3B ',
         // Add as many custom colors as needed
       },
     },

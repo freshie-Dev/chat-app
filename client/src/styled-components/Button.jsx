@@ -22,7 +22,7 @@ const secondaryStyles = css`
 const Button = styled.button`
   width: ${(props) => props.width || '200px'};
   height: ${(props) => props.height || '40px'};
-  margin: ${(props) => props.margin || '12px auto 10%'};
+  margin: ${(props) => props.margin || '6px auto'};
   font-size: ${(props) => props.fontSize || '1rem'};
   font-weight: ${(props) => props.fontWeight || 'bold'};
   border: ${(props) => props.border || 'none'};
@@ -31,5 +31,7 @@ const Button = styled.button`
   transition: ${(props) => props.transition || 'background-color 0.2s ease-in'};
   ${(props) => (props.primary ? primaryStyles : secondaryStyles)};
 `;
+
+
 
 export default Button;

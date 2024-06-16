@@ -1,10 +1,10 @@
 import React from 'react'
 import { useUser } from '../context/UserContext'
 import { Navigate, Outlet } from 'react-router-dom'
-import LogoutButton from '../custom-components/logout-button/LogoutButton'
+import Button from '../styled-components/Button'
 
 const ProtectedUserRoutes = () => {
-  const { user } = useUser()
+  const { user, setUser } = useUser()
   let userInfo = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : user
   console.log(userInfo)
 
@@ -12,27 +12,16 @@ const ProtectedUserRoutes = () => {
     if (user) {
       return (
         <>
-          <LogoutButton />
+          <Button onClick={ () => {
+            localStorage.clear()
+            setUser(null)
+          }} width="100px" primary>Logout</Button>
           <Outlet />
         </>
       )
     } else {
       return <><Navigate to='/' /></>
     }
-    // if (userInfo.type === "user") {
-    //   return (
-    //     <>
-    //       <LogoutButton />
-    //       <Outlet />
-    //     </>
-    //   )
-    // }
-    // } else if (userInfo.type === "admin") {
-    // return <Navigate to='/unauthorized' replace/>;
-    // }
-    // } else {
-    // return <><Navigate to='/' /></>
-    // }
 
 
   }

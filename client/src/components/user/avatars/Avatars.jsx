@@ -3,10 +3,11 @@ import axios from 'axios';
 import styled from 'styled-components';
 import Button from '../../../styled-components/Button';
 import { Link } from 'react-router-dom';
+import { useUser } from '../../../context/UserContext';
 
 const Avatars = () => {
-    const [avatars, setAvatars] = useState([]);
-    const [selectedAvatar, setSelectedAvatar] = useState(null)
+    const {uploadAvatar, avatars, setAvatars} = useUser()
+    const [selectedAvatarIndex, setSelectedAvatarIndex] = useState(null);
 
     useEffect(() => {
         const fetchAvatars = async () => {
@@ -15,49 +16,43 @@ const Avatars = () => {
                 const avatarPromises = avatarIds.map(async (id) => {
                     const response = await axios.get(`https://api.multiavatar.com/${JSON.stringify(id)}`);
                     const svg = response.data;
-                    const blob = new Blob([svg], { type: 'image/svg+xml' });
-                    const url = URL.createObjectURL(blob);
-                    return url;
+                    const base64 = btoa(svg); // Convert SVG to base64
+                    return `data:image/svg+xml;base64,${base64}`;
                 });
 
                 const avatarUrls = await Promise.all(avatarPromises);
-                console.log(avatarUrls)
                 setAvatars(avatarUrls);
             } catch (error) {
                 console.error('Error fetching avatars:', error);
             }
         };
 
-        // fetchAvatars();
+        fetchAvatars();
     }, []);
-    useEffect(() => {
-        console.log(selectedAvatar)
-    }, [selectedAvatar])
 
+    useEffect(() => {
+        console.log(selectedAvatarIndex);
+    }, [selectedAvatarIndex]);
 
     return (
-        <Container className=" bg-c3">
-            <h1 className={`logo-font text-c4  my-4 md:my-8 ${selectedAvatar === null && "animate-blinkingBg"}`}>Select your avatar</h1>
-            <div className='md:flex gap-6 rounded-full p-2 border-2 border-c1 '>
+        <Container className="bg-c3">
+            <h1 className={`logo-font text-c4 my-4 md:my-8 ${selectedAvatarIndex === null && 'animate-blinkingBg'}`}>
+                Select your avatar
+            </h1>
+            <div className="md:flex gap-6 rounded-full p-2 border-2 border-c1">
                 {avatars.map((avatar, index) => (
-
                     <img
-                        onClick={e => setSelectedAvatar((prevVal) => {
-                            if (prevVal === index) {
-                                return null
-                            } else {
-                                return index
-                            }
-                        })}
-                        className={`w-[70px] md:w-[100px] m-6 avatar-shadow rounded-full ${selectedAvatar === index && "selected-avatar"}  `}
+                        onClick={() => setSelectedAvatarIndex((prevVal) => (prevVal === index ? null : index))}
+                        className={`w-[70px] md:w-[100px] m-6 avatar-shadow rounded-full ${selectedAvatarIndex === index && 'selected-avatar'
+                            }`}
                         key={index}
-                        src={avatar} alt={`Avatar ${index + 1}`}
+                        src={avatar}
+                        alt={`Avatar ${index + 1}`}
                     />
                 ))}
             </div>
-            {/* <Button mode onClick={e => console.log("hello")} disabled={!selectedAvatar}>Proceed</Button> */}
-            <Link to='/user'>
-                <Button disabled={selectedAvatar === null} margin="40px auto" width="150px" height="50px" borderRadius="30px" fontSize="1.2rem">
+            <Link to="/user">
+                <Button onClick={()=> uploadAvatar(avatars[selectedAvatarIndex])} disabled={selectedAvatarIndex === null} margin="40px auto" width="150px" height="50px" borderRadius="30px" fontSize="1.2rem">
                     Proceed
                 </Button>
             </Link>

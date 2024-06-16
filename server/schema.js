@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const {Schema} = mongoose;
+const { Schema } = mongoose;
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -18,9 +18,13 @@ const userSchema = new mongoose.Schema({
         type: String,
         // required: true
     },
-    password: {
+    isAvatarSet: {
+        type: Boolean,
+        default: false,
+    },
+    avatar: {
         type: String,
-        // required: true
+        default: "",
     },
     createdAt: {
         type: Date,
@@ -30,4 +34,4 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema)
 
-module.exports = { User};
+module.exports = { User };
