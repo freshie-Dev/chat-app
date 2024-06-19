@@ -6,9 +6,6 @@ const ProtectedAdminRoutes = () => {
     const {user} = useUser()
 
     const userInfo = user;
-    // let userInfo = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : user
-    console.log(user)
-
     if (userInfo) {
         if (userInfo.type === "admin") {
           return (

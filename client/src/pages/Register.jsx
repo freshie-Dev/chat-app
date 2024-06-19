@@ -15,7 +15,6 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value)
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -30,10 +29,8 @@ const Register = () => {
 
   if (user) {
     if (user.type === 'user') {
-      console.log("user running")
       return <Navigate to="/user" />;
     } else if (user.type === 'admin') {
-      console.log("admin running")
       return <Navigate to="/admin" />;
     }
   }

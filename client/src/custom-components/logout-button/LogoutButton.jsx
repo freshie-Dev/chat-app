@@ -5,7 +5,6 @@ const LogoutButton = () => {
     const {setUser} = useUser()
 
     const handleClick = ()=> {
-      console.log("i am running")
         localStorage.clear()
         setUser(null)
     }

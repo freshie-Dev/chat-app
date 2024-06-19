@@ -33,7 +33,6 @@ function App() {
     } else {
       setTheme(lightTheme)
     }
-    console.log(theme)
   };
   return (
     <ThemeProvider theme={theme}>

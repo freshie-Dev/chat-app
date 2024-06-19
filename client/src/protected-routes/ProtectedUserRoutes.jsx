@@ -6,8 +6,6 @@ import Button from '../styled-components/Button'
 const ProtectedUserRoutes = () => {
   const { user, setUser } = useUser()
   let userInfo = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : user
-  console.log(userInfo)
-
 
     if (user) {
       return (

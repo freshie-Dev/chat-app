@@ -4,13 +4,23 @@ import App from './App.jsx'
 import './index.css'
 import UserProvider from './context/UserContext.jsx'
 import { BrowserRouter } from 'react-router-dom'
+import { SnackbarProvider } from 'notistack';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <UserProvider>
-        <App />
-      </UserProvider>
-    </BrowserRouter>
-  </React.StrictMode>,
+  // <React.StrictMode>
+    <SnackbarProvider
+      maxSnack={3}
+      autoHideDuration={1500}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+    >
+      <BrowserRouter>
+        <UserProvider>
+          <App />
+        </UserProvider>
+      </BrowserRouter>
+    </SnackbarProvider>,
+  // </React.StrictMode>,
 )

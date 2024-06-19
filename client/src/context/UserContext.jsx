@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 const UserContext = createContext();
 
@@ -8,12 +8,16 @@ const UserProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null)
   const [avatars, setAvatars] = useState([]);
-  const [contacts, setContacts] = useState(null)
+  const [contacts, setContacts] = useState([])
+  const [selectedChat, setSelectedChat] = useState(null)
+  const [message, setMessage] = useState('')
+  const [messages, setMessages] = useState([])
+  const socketRef = useRef(null)
 
   const loginUser = async (formData) => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/login`, formData);
-      console.log(response.data.user.type)
+      
       localStorage.setItem('token', response.data.token)
       localStorage.setItem('user', JSON.stringify(response.data.user));
       setUser(response.data.user)
@@ -25,19 +29,19 @@ const UserProvider = ({ children }) => {
 
   const registerUser = async (formData) => {
     try {
-      console.log(import.meta.env.VITE_BASE_URL)
+      
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/register`, formData);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       setUser(response.data.user)
-      console.log(response.data)
+      
     } catch (error) {
       console.log(error.response.status, error.response.data.message)
     }
   }
 
   const verifyToken = async () => {
-    console.log("im running")
+    console.log("setting loading TRUE from verify token")
     setIsLoading(true)
     try {
       const token = localStorage.getItem('token');
@@ -52,7 +56,7 @@ const UserProvider = ({ children }) => {
           token
         }
       })
-      console.log(response.status)
+      
       if (response.status === 200) {
         setUser(JSON.parse(localStorage.getItem('user')))
       }
@@ -66,14 +70,14 @@ const UserProvider = ({ children }) => {
   }
 
   const uploadAvatar = async (selectedAvatar) => {
-    console.log(selectedAvatar)
+    
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/upload_avatar`,{image: selectedAvatar} ,{
         headers: {
           token: localStorage.getItem('token')
         }
       })
-      console.log(response.data)
+      
     } catch (error) {
       console.log(error)
     }
@@ -81,32 +85,76 @@ const UserProvider = ({ children }) => {
 
   const fetchContacts = async () => {
     try {
+      
       const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/auth/fetch_contacts`, {
         headers: {
           token: localStorage.getItem('token'),
         }
       })
       const data = response.data;
-      console.log(data)
       setContacts(data.contacts)
     } catch (error) {
       console.log(error)
     }
   }
 
+  const saveMessageToDB = async ()=> {
+    const data = {
+      from: user._id,
+      to: selectedChat._id,
+      message: message
+    }
+    console.log(data)
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/message/send_message`, data, {
+        headers: {
+          token: localStorage.getItem('token')
+        }
+      })
+      return response.status
+    } catch (error) {
+      console.log(error)
+      return response.status
+    }
+  }
+
+  const fetchMessages = async ()=> {
+    try {
+      
+        const from= user._id;
+        const to = selectedChat._id;
+      
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/message/fetch_all_messages`,{
+        headers: {
+          token: localStorage.getItem('token')
+        }, params: {
+          from,
+          to
+        }
+      });
+      console.log(response.data)
+      setMessages(response.data.projectedMessages)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     verifyToken()
   }, [])
-  useEffect(() => {
-    console.log(user)
-  }, [user])
+ 
 
 
   return (
     <UserContext.Provider
       value={{
-        user, setUser, loginUser, registerUser, fetchContacts, contacts, uploadAvatar, avatars, setAvatars
+        user, setUser, loginUser, registerUser,
+        contacts, fetchContacts, 
+        avatars, setAvatars, uploadAvatar, 
+        selectedChat, setSelectedChat, 
+        message, setMessage, saveMessageToDB,
+        socketRef,
+        fetchMessages, messages, setMessages,
       }}
     >
       {/* {children } */}

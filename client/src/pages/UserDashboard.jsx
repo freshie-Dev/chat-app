@@ -1,11 +1,25 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import Sidebar from '../components/user/sidebar/Sidebar'
 import ChatInput from '../components/user/chat/ChatInput'
 import Messages from '../components/user/chat/Messages'
 import Header from '../components/user/header/Header'
+import { useUser } from '../context/UserContext'
+import { io } from 'socket.io-client'
+import Welcome from '../components/user/welcome/Welcome'
 
 const UserDashboard = () => {
+  const {socketRef, user, selectedChat} = useUser()
+  const isMounted = useRef();
+
+  useEffect(() => {
+    if (!socketRef.current) {
+      socketRef.current = io(import.meta.env.VITE_BASE_URL);
+      socketRef.current.emit('add_user', user._id);
+      isMounted.current = true;
+    }
+  }, [user._id]);
+  
   return (
     <Layout>
       <aside className='md:block hidden bg-pink-600'>
@@ -15,8 +29,11 @@ const UserDashboard = () => {
         <Header/>
       </header>
       <section>
+        {!selectedChat ? <Welcome/> : <>
         <Messages />
         <ChatInput />
+        </>}
+        
       </section>
     </Layout>
   )
@@ -25,14 +42,13 @@ const UserDashboard = () => {
 export default UserDashboard
 
 const Layout = styled.div`
+
   padding: 50px 80px;
-  background-color: #383838;
-  overflow: hidden;
   width: 100vw;
   height: 100vh;
   display: grid;
   grid-template-columns: 30% 70%;
-  grid-template-rows: 8% auto;
+  grid-template-rows: 10% 90%;
   grid-template-areas:
   "sidebar header"
   "sidebar section";
@@ -40,14 +56,15 @@ const Layout = styled.div`
   aside {
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
+    overflow: hidden;
     grid-area: sidebar;
     /* background: transparent; */
     /* background-color: #CF0A0A; */
     background-color: #DC5F00;
     /* background-color: rgb(59,59,59); */
-    overflow-y: scroll;
   }
   header {
+    /* border-bottom: var(--c1) 3px solid; */
     border-top-right-radius: 5px;
     grid-area: header;
     /* background-color: #DC5F00; */
@@ -57,16 +74,15 @@ const Layout = styled.div`
   }
    section {
     display: flex;
+    position: relative;
     flex-direction: column;
     justify-content: space-between;
     /* align-items: center; */
     border-bottom-right-radius: 5px;
     grid-area: section;
     background-color: #EEEEEE;
-    /* background-color: yellow; */
-    overflow-y: scroll;
 
- 
+
   background:
     radial-gradient(orange 15%, transparent 16%) 0 0;
     /* radial-gradient(orange 15%, transparent 16%) 8px 8px; */

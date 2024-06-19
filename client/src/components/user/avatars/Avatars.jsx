@@ -30,9 +30,7 @@ const Avatars = () => {
         fetchAvatars();
     }, []);
 
-    useEffect(() => {
-        console.log(selectedAvatarIndex);
-    }, [selectedAvatarIndex]);
+ 
 
     return (
         <Container className="bg-c3">

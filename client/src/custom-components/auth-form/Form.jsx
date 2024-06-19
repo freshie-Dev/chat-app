@@ -26,7 +26,6 @@ const AuthForm = () => {
     });
     const handleRegisterChange = (e) => {
         const { name, value } = e.target;
-        console.log(name, value)
         setRegisterFormData({ ...registerFormData, [name]: value });
     };
     const handleRegisterSubmit = async (e) => {

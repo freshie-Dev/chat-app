@@ -8,11 +8,19 @@ body {
     background-color: #EEEEEE;
     color: white;
     font-family: "Ubuntu", sans-serif;
+    
     --c1: #3B3B3B;
     --c2: #cf3f0a;
     --c3: #DC5F00;
     --c4: #EEEEEE ;
 }
+body::-webkit-scrollbar {
+    width:40px;
+    &-thumb {
+      background-color: blue;
+      width: 30px;
+    }
+  }
 
 * {
     margin: 0px;
@@ -28,7 +36,7 @@ h1 {
     font-size: clamp(1.8rem, 0.5132rem + 3.6842vw, 3rem);
 }
 h2 {
-    font-size: clamp(1.5rem, 0.5132rem + 3.6842vw, 2.7rem);
+    font-size: clamp(1.4rem, 0.3132rem + 3.2842vw, 2rem);
 }
 
 label {
@@ -36,8 +44,10 @@ label {
 }
 
 p {
-    font-size: clamp(0.75rem, 0.5921rem + 0.7895vw, .9);
+    font-size: clamp(0.75rem, 0.6447rem + 0.2263vw, 1rem);
+    
 }
+
 
 h4 {
     font-size: clamp(0.95, 0.7533rem + 0.9211vw, 1.15);

@@ -3,13 +3,12 @@ import { useUser } from '../context/UserContext';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { easeIn, easeInOut, motion } from "framer-motion"
 
-import StyledButton from '../styled-components/Button';
 
 import { lightTheme, darkTheme } from '../styled-components/Themes';
 import styled from 'styled-components';
 import AuthForm from '../custom-components/auth-form/Form';
 
-import "../styles/blobStyles.css"
+import AnimatedGlob from '../custom-components/animated-glob/AnimatedGlob';
 
 const Login = () => {
   const { user, loginUser } = useUser();
@@ -37,31 +36,19 @@ const Login = () => {
 
   // if (user) {
   //   if (user.type === 'user') {
-  //     console.log("user running")
   //     return <Navigate to="avatars" />;
   //     // return <Navigate to="user" />;
   //   } else if (user.type === 'admin') {
-  //     console.log("admin running")
   //     return <Navigate to="avatars" />;
   //     // return <Navigate to="admin" />;
   //   }
   // }
-  if(user) {
-    
-    return <><Navigate to='avatars'/></>
-  }
-  console.log(user)
+  if(user) return <><Navigate to='avatars'/></>
+ 
 
   return (
     <Container className='md:my-0 my-[50px]'>
-      <div className='w-[50%] sm:w-full flex justify-center items-center relative min-w-max'>
-        <h1 className=" logo-font absolute z-50  bg-[#3B3B3B] border-[2px] border-[white] text-[#DC5F00] sm:px-10 px-4 py-2 rounded-full bg-opacity-85 shadow-inner  ">Secret Chat</h1>
-        <div id='blob' class="bm-pl">
-          <div class="bm-pl__blob bm-pl__blob--r"></div>
-          <div class="bm-pl__blob bm-pl__blob--g"></div>
-          <div class="bm-pl__blob bm-pl__blob--b"></div>
-        </div>
-      </div>
+      <AnimatedGlob text="Secret Chat"/>
       <div className='w-[50%] sm:w-full flex justify-center items-center'>
         <AuthForm />
 

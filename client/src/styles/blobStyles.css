@@ -4,10 +4,12 @@
   }
 
 .logo-font {
-    font-family: "LogoFont";
+    /* font-family: "LogoFont"; */
     /* filter: drop-shadow(0 0 2rem #CF0A0A); */
     /* box-shadow: 0 0 5px 5px #CF0A0A; */
     box-shadow: 0 0 5px 5px rgb(59, 59, 59);
+	font-weight: 800;
+	font-size: 2.5rem;
 }
 
 

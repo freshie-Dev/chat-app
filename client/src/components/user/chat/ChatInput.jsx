@@ -1,113 +1,79 @@
-// import React, { useState, useRef } from 'react';
-// import Picker from "emoji-picker-react"
-// import { IoSend, IoSendOutline } from "react-icons/io5";
-// import { LuSendHorizonal } from "react-icons/lu";
-// import { RiSendPlane2Line } from "react-icons/ri";
-// import { MdEmojiEmotions, MdOutlineEmojiEmotions } from "react-icons/md";
-// import styled from 'styled-components';
-
-// const ChatInput = () => {
-//     const [msg, setMsg] = useState('');
-//     const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
-//     const inputRef = useRef(null);
-
-//     const handleEmojiClick = (emojiObject) => {
-//         console.log(emojiObject.emoji)
-//         setMsg(prevMsg => prevMsg + emojiObject.emoji);
-//         setOpenEmojiPicker(false);
-//         inputRef.current.focus(); // Focus the input field after selecting an emoji
-//     };
-
-
-//     return (
-//         <Container className='flex flex-col m-2'>
-//             {openEmojiPicker && (
-//                 <div className='emoji'>
-//                     {/* <Picker style={{ width: "100%", marginBottom: ".5rem", backgroundColor: "#3B3B3B" }} onEmojiClick={handleEmojiClick} /> */}
-//                     <Picker  onEmojiClick={handleEmojiClick} />
-//                 </div>
-//             )}
-//             <div className='flex justify-between items-start   overflow-hidden px-4 bg-c3 p-3  rounded-md'>
-
-//                 <div className='w-[50px] bg-c4 h-[40px] mr-2 flex justify-center items-center text-c1 rounded-lg button '>
-//                     <MdOutlineEmojiEmotions size={25} onClick={() => setOpenEmojiPicker(!openEmojiPicker)} />
-//                 </div>
-
-//                 <div className='w-full h-full flex rounded-lg bg-c4'>
-//                     <input
-//                         ref={inputRef}
-//                         value={msg}
-//                         name='message'
-//                         onChange={e => setMsg(e.target.value)}
-//                         placeholder='Message...'
-//                         className='px-4 w-full min-h-[40px] bg-transparent placeholder:text-c1 text-c1 '
-//                         type="text"
-//                     />
-//                 </div>
-//                 <div className='w-[50px] bg-c4 h-[40px] ml-2 flex justify-center items-center text-c1 rounded-lg button'>
-//                     <RiSendPlane2Line size={20} className='m-2' />
-//                 </div>
-//             </div>
-//         </Container>
-//     );
-// };
-
-// export default ChatInput;
-// const Container = styled.div`
-//     input:focus {
-//         outline: none;
-//     }
-//     .button:hover {
-//     & > * {
-//         /* color: red; */
-//         scale: 1.2;
-//     }
-// }
-// `
-
-
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Picker from "emoji-picker-react";
-import { IoSend, IoSendOutline } from "react-icons/io5";
-import { LuSendHorizonal } from "react-icons/lu";
 import { RiSendPlane2Line } from "react-icons/ri";
-import { MdEmojiEmotions, MdOutlineEmojiEmotions } from "react-icons/md";
+import { MdOutlineEmojiEmotions } from "react-icons/md";
 import styled from 'styled-components';
+import { useUser } from '../../../context/UserContext';
+import useSnack from '../../../utilities/useSnack';
+
 
 const ChatInput = () => {
-    const [msg, setMsg] = useState('');
+
+    const { showError } = useSnack()
+    const { message, setMessage, saveMessageToDB, selectedChat, socketRef, user, setMessages } = useUser();
+    const [count, setCount] = useState(0)
+
+
     const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
     const inputRef = useRef(null);
 
-    const handleEmojiClick = (event, emojiObject) => {
-        setMsg(prevMsg => prevMsg + emojiObject.emoji);
+    const handleEmojiClick = (emojiObject) => {
+        setMessage(prevMsg => prevMsg + emojiObject.emoji);
         setOpenEmojiPicker(false);
         inputRef.current.focus(); // Focus the input field after selecting an emoji
     };
 
+    const handleSendMessage = async () => {
+        const date = new Date().toISOString();
+        console.log(date)
+        if (selectedChat) {
+            const status = await saveMessageToDB()
+            if (status === 200) {
+                setMessage('')
+            } else {
+                showError("Error occured while sending message")
+            }
+            socketRef.current.emit('send_message', {
+                to: selectedChat._id,
+                from: user._id,
+                message: message,
+                date
+            })
+            console.log("sending message", message)
+            setMessages(prevMsgs => {
+                return [...prevMsgs, {message, fromSelf: true, timeStamp: date}];
+            })
+            setMessage('')
+        } else {
+            showError("Select a chat")
+        }
+    }
+
+
+
     return (
-        <Container className='flex flex-col m-2'>
+        <Container className='flex flex-col    w-full'>
             {openEmojiPicker && (
                 <div className='emoji'>
                     <Picker onEmojiClick={handleEmojiClick} />
                 </div>
             )}
-            <div className='flex justify-between items-start overflow-hidden px-4 bg-c3 p-3 rounded-md'>
+            <div className='flex justify-between items-start  px-4 bg-c3 p-3 rounded-md'>
                 <div className='w-[50px] bg-c4 h-[40px] mr-2 flex justify-center items-center text-c1 rounded-lg button'>
                     <MdOutlineEmojiEmotions size={25} onClick={() => setOpenEmojiPicker(!openEmojiPicker)} />
                 </div>
                 <div className='w-full h-full flex rounded-lg bg-c4'>
                     <input
                         ref={inputRef}
-                        value={msg}
+                        value={message}
                         name='message'
-                        onChange={e => setMsg(e.target.value)}
+                        onChange={e => setMessage(e.target.value)}
                         placeholder='Message...'
                         className='px-4 w-full min-h-[40px] bg-transparent placeholder:text-c1 text-c1'
                         type="text"
                     />
                 </div>
-                <div className='w-[50px] bg-c4 h-[40px] ml-2 flex justify-center items-center text-c1 rounded-lg button'>
+                <div onClick={handleSendMessage} className='w-[50px] bg-c4 h-[40px] ml-2 flex justify-center items-center text-c1 rounded-lg button'>
                     <RiSendPlane2Line size={20} className='m-2' />
                 </div>
             </div>
@@ -118,11 +84,13 @@ const ChatInput = () => {
 export default ChatInput;
 
 const Container = styled.div`
-    input:focus {
-        outline: none;
-    }
-    .button:hover {
-        & > * {
+
+padding: 0 5px 10px 5px;
+input:focus {
+    outline: none;
+}
+.button:hover {
+    & > * {
             scale: 1.2;
         }
     }
@@ -142,4 +110,28 @@ const Container = styled.div`
             
         }
     }
-`;
+    `;
+
+// useEffect(() => {
+//     // Establish the Socket.IO connection only once, when the component mounts
+//     socketRef.current = io.connect(import.meta.env.VITE_BASE_URL);
+//     return () => {
+//         // Clean up the connection when the component unmounts
+//         socketRef.current.disconnect();
+//     };
+// }, []);
+
+
+
+
+// useEffect(() => {
+//     setCount(count + 1)
+//     const id = setInterval(() => setCount((count) => count + 1), 1000);
+//     socketRef.current.on("recieve_message", (data)=> {
+//         console.log(count)
+//         alert(data.message)
+//     })
+//     return () => {
+//         clearInterval(id);
+//     }
+// }, [socketRef.current])
