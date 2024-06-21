@@ -43,16 +43,24 @@ const Login = () => {
   //     // return <Navigate to="admin" />;
   //   }
   // }
-  if(user) return <><Navigate to='avatars'/></>
- 
+  if (user) {
+    if (user.isAvatarSet) {
+      return <Navigate to='user' />
+    } else {
+      return <Navigate to='avatars' />
+    }
+  }
+
+
+
 
   return (
-    <Container className='md:my-0 my-[50px]'>
-      <AnimatedGlob text="Secret Chat"/>
+    <Container className='  '>
+      <AnimatedGlob text="Chatify" />
       <div className='w-[50%] sm:w-full flex justify-center items-center'>
         <AuthForm />
-
       </div>
+
     </Container>
   )
 };
@@ -61,8 +69,8 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  width: 100%;
+  padding-top: 50px;
+  padding-bottom: 50px;
 
   @media (max-width: 768px) {
     flex-direction: column;

@@ -8,15 +8,7 @@ const ProtectedUserRoutes = () => {
   let userInfo = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : user
 
     if (user) {
-      return (
-        <>
-          <Button onClick={ () => {
-            localStorage.clear()
-            setUser(null)
-          }} width="100px" primary>Logout</Button>
-          <Outlet />
-        </>
-      )
+      return  <Outlet />
     } else {
       return <><Navigate to='/' /></>
     }

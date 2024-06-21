@@ -3,24 +3,40 @@
 @tailwind utilities;
 
 body {
-    margin: 0px;
-    padding: 0px;
-    background-color: #EEEEEE;
-    color: white;
+    box-sizing: border-box;
     font-family: "Ubuntu", sans-serif;
-    
     --c1: #3B3B3B;
     --c2: #cf3f0a;
     --c3: #DC5F00;
-    --c4: #EEEEEE ;
+    --c4: #EEEEEE;
+    background-color: #fcceac;
 }
-body::-webkit-scrollbar {
-    width:40px;
-    &-thumb {
-      background-color: blue;
-      width: 30px;
+#root {
+    min-height: 100vh;
+    height: 100vh;
+    max-height: 200vh;
+    width: 100vw;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    padding: 50px 80px;
+
+    color: var(--c4)
+
+}
+@media (max-width: 768px) {
+    #root {
+        padding: 0;
     }
-  }
+}
+
+input:focus {
+    outline: none;
+}
+
+
 
 * {
     margin: 0px;
@@ -35,6 +51,7 @@ body::-webkit-scrollbar {
 h1 {
     font-size: clamp(1.8rem, 0.5132rem + 3.6842vw, 3rem);
 }
+
 h2 {
     font-size: clamp(1.4rem, 0.3132rem + 3.2842vw, 2rem);
 }
@@ -45,7 +62,7 @@ label {
 
 p {
     font-size: clamp(0.75rem, 0.6447rem + 0.2263vw, 1rem);
-    
+
 }
 
 

@@ -4,12 +4,13 @@ import styled from 'styled-components';
 import Header from '../header/Header';
 
 const Sidebar = () => {
-    const { fetchContacts, contacts, user, selectedChat, setSelectedChat, fetchMessages } = useUser();
+    const { fetchContacts, contacts, user, selectedChat, setSelectedChat, fetchMessages, tempAvatar } = useUser();
 
     const [selectedChatIndex, setSelectedChatIndex] = useState(null);
     const [] = useState(null);
 
     let sortedContacts = [...contacts]; // Create a copy of contacts array
+
 
     const handleChatClick = (contact) => {
         setSelectedChatIndex(prevValue => {
@@ -71,7 +72,7 @@ const Sidebar = () => {
                 })}
             </div>
             <div className='flex justify-center items-center gap-3 bg-c2  py-4'>
-                <img width={65} src={user.avatar} alt="" />
+                <img width={65} src={user.isAvatarSet ? user.avatar : tempAvatar} alt="" />
                 <p className='font-bold text-[1.6rem]'>{user.username}</p>
                 {/* {user.username} */}
             </div>

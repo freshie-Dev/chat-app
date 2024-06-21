@@ -1,5 +1,17 @@
--   handle login, signup and logout for new form 
+DONE:
+-   17/06/2024  -  handle login, signup and logout for new form 
 
+-   17/06/2024  -  create multiple users, and fetch users (added user) while reaching on user dashboard
+
+-   17/06/2024  -  Update header
+
+-   17/06/2024  -  Integrate messages with data base
+
+-   19/06/24    -  Integrate sockets for messages.
+
+-   20/06/24    -   Fix online, ofline status while logging in.
 <---------------->
+
 Pending:
--   create multiple users, and fetch users (added user) while reaching on user dashboard.
+
+create different context for userprofile, sockethandling, messages etc.

@@ -14,16 +14,16 @@ const Messages = () => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   };
 
-  const handleMessageRecieve = async ()=> {
-    if(socketRef.current) {
-      socketRef.current.on("message_recieve", (message, date) => {
-        console.log(message)
-        console.log( date)
-        setArrivalMessage({fromSelf: false, message, timeStamp: date})
-      })
-     }
+  const handleMessageRecieve = ()=> {
+        console.log("recieving message")
+        socketRef.current.on("message_recieve", (message, date) => {
+          console.log(message)
+          console.log(date)
+          setArrivalMessage({fromSelf: false, message, timeStamp: date}) 
+        });
   } 
   useEffect(() => {
+    console.log("im running")
     handleMessageRecieve()
   }, [socketRef.current])
 
@@ -51,7 +51,7 @@ const Messages = () => {
   }
 
   return (
-    <div className='msg-container overflow-scroll border-t-4  border-[#e28e3f]'>
+    <div className='msg-container overflow-scroll border-t-4  border-[#e28e3f] w-full h-full'>
       <Container className=' flex flex-col pr-2 justify-end'>
         {messages.map((message, index) => {
           return (

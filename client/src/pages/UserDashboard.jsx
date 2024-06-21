@@ -7,34 +7,31 @@ import Header from '../components/user/header/Header'
 import { useUser } from '../context/UserContext'
 import { io } from 'socket.io-client'
 import Welcome from '../components/user/welcome/Welcome'
+import { useStyle } from '../context/StylesContext'
 
 const UserDashboard = () => {
-  const {socketRef, user, selectedChat} = useUser()
-  const isMounted = useRef();
+  const {selectedChat, isMounted } = useUser()
+  const {showSlider} = useStyle()
 
-  useEffect(() => {
-    if (!socketRef.current) {
-      socketRef.current = io(import.meta.env.VITE_BASE_URL);
-      socketRef.current.emit('add_user', user._id);
-      isMounted.current = true;
-    }
-  }, [user._id]);
-  
   return (
     <Layout>
-      <aside className='md:block hidden bg-pink-600'>
+      <div className={`md:hidden w-[250px] bg-c3 h-full absolute top-0 ${showSlider ? "left-0" : "left-[-250px]"} z-[100] `}>
         <Sidebar />
-      </aside>
-      <header>
-        <Header/>
-      </header>
-      <section>
-        {!selectedChat ? <Welcome/> : <>
-        <Messages />
-        <ChatInput />
-        </>}
-        
-      </section>
+      </div>
+        <aside className='md:block hidden bg-pink-600'>
+          <Sidebar />
+
+        </aside>
+        <header>
+          <Header />
+        </header>
+        <section>
+          {!selectedChat ? <Welcome /> : <>
+            <Messages />
+            <ChatInput />
+          </>}
+
+        </section>
     </Layout>
   )
 }
@@ -42,10 +39,9 @@ const UserDashboard = () => {
 export default UserDashboard
 
 const Layout = styled.div`
-
-  padding: 50px 80px;
-  width: 100vw;
-  height: 100vh;
+height: 100%;
+width: 100%;
+position: relative;
   display: grid;
   grid-template-columns: 30% 70%;
   grid-template-rows: 10% 90%;
@@ -53,6 +49,19 @@ const Layout = styled.div`
   "sidebar header"
   "sidebar section";
    
+  @media (max-width: 768px) {
+    border-radius: 0;
+    padding: 0;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "section";
+    header, section {
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+    }
+  }
+
   aside {
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
@@ -79,6 +88,7 @@ const Layout = styled.div`
     justify-content: space-between;
     /* align-items: center; */
     border-bottom-right-radius: 5px;
+    overflow: hidden;
     grid-area: section;
     background-color: #EEEEEE;
 
@@ -92,16 +102,5 @@ const Layout = styled.div`
     background-size:19px 19px;
   }
 
-  @media (max-width: 768px) {
-    border-radius: 0;
-    padding: 0;
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "header"
-      "section";
-    header, section {
-      border-top-right-radius: 0px;
-      border-bottom-right-radius: 0px;
-    }
-  }
+ 
 `

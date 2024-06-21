@@ -14,7 +14,8 @@ const Avatars = () => {
             try {
                 const avatarIds = ['Avatar1', 'Avatar2', 'Avatar3', 'Avatar4'];
                 const avatarPromises = avatarIds.map(async (id) => {
-                    const response = await axios.get(`https://api.multiavatar.com/${JSON.stringify(id)}`);
+                    const rand = Math.floor(100000 + Math.random() * 900000)
+                    const response = await axios.get(`https://api.multiavatar.com/${rand}`);
                     const svg = response.data;
                     const base64 = btoa(svg); // Convert SVG to base64
                     return `data:image/svg+xml;base64,${base64}`;
@@ -30,6 +31,10 @@ const Avatars = () => {
         fetchAvatars();
     }, []);
 
+    useEffect(() => {
+      console.log(selectedAvatarIndex)
+    }, [selectedAvatarIndex])
+    
  
 
     return (
@@ -38,22 +43,25 @@ const Avatars = () => {
                 Select your avatar
             </h1>
             <div className="md:flex gap-6 rounded-full p-2 border-2 border-c1">
-                {avatars.map((avatar, index) => (
-                    <img
-                        onClick={() => setSelectedAvatarIndex((prevVal) => (prevVal === index ? null : index))}
-                        className={`w-[70px] md:w-[100px] m-6 avatar-shadow rounded-full ${selectedAvatarIndex === index && 'selected-avatar'
-                            }`}
-                        key={index}
-                        src={avatar}
-                        alt={`Avatar ${index + 1}`}
-                    />
-                ))}
+                {avatars.map((avatar, index) => {
+                    return (
+                    
+                        <img
+                            onClick={() => { setSelectedAvatarIndex((prevVal) =>{ return (prevVal === index ? null : index)})}}
+                            className={`w-[70px] md:w-[100px] m-6 avatar-shadow rounded-full ${selectedAvatarIndex === index && 'selected-avatar'
+                                }`}
+                            key={index}
+                            src={avatar}
+                            alt={`Avatar ${index + 1}`}
+                        />
+                    )
+                } )}
             </div>
-            <Link to="/user">
+            {/* <Link to="/user"> */}
                 <Button onClick={()=> uploadAvatar(avatars[selectedAvatarIndex])} disabled={selectedAvatarIndex === null} margin="40px auto" width="150px" height="50px" borderRadius="30px" fontSize="1.2rem">
                     Proceed
                 </Button>
-            </Link>
+            {/* </Link> */}
         </Container>
     );
 };
