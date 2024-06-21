@@ -12,6 +12,13 @@ DONE:
 -   20/06/24    -   Fix online, ofline status while logging in.
 <---------------->
 
-Pending:
+PENDING:
+1. create different context for userprofile. (done)
+1. create different context for socket.
 
-create different context for userprofile, sockethandling, messages etc.
+
+TEST:
+1. test avatar selection. (done)
+2. test socket functionality.
+
+

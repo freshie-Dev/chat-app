@@ -2,25 +2,25 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 
 
-const AuthContext = createContext();
+const SocketContext = createContext();
 
-const AuthProvider = ({ children }) => {
+const SocketProvider = ({ children }) => {
 
     const [showSlider, setShowSlider] = useState(false)
   return (
-    <AuthContext.Provider
+    <SocketContext.Provider
       value={{
         showSlider, setShowSlider
       }}
     >
       {children}
-    </AuthContext.Provider>
+    </SocketContext.Provider>
   );
 };
 // CUSTOM HOOK FOR USING USER CONTEXT
-const useAuth = () => {
-  return useContext(AuthContext);
+const useSocket = () => {
+  return useContext(SocketContext);
 };
 
-export default AuthProvider;
-export { useAuth };
+export default SocketProvider;
+export { useSocket };

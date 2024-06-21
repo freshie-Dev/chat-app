@@ -1,62 +1,59 @@
 import axios from 'axios'
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useReducer, useRef, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client'
+import userReducer from '../reducer/UserReducer';
 
 
 const UserContext = createContext();
 
-// const initialState = {
-//   isLoading: false,
-//   user: null,
-//   avatars: [],
-//   tempAvatar: null,
-//   contacts: [],
-//   selectedChat: null,
-//   message: '',
-//   messages: [],
-// };
+const initialUserState = {
+  isLoading: false,
+  user: null,
+  tempAvatar: null,
+  contacts: [],
+  selectedChat: null,
+  message: '',
+  messages: [],
+};
 
 const UserProvider = ({ children }) => {
-
   const navigate = useNavigate()
-  //   const baseUrl = import.meta.env.VITE_REACT_APP_API_BASE_URL;
-  const [isLoading, setIsLoading] = useState(false)
-  const [user, setUser] = useState(null)
-  const [avatars, setAvatars] = useState([]);
-  const [tempAvatar, setTempAvatar] = useState(null)
-  const [contacts, setContacts] = useState([])
+
+  const [userState, dispatch] = useReducer(userReducer, initialUserState);
+  const { user, isLoading, tempAvatar, contacts } = userState;
+
+
   const [selectedChat, setSelectedChat] = useState(null)
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState([])
-
   const socketRef = useRef(null)
   const isMounted = useRef(false);
 
 
-  const setUserStatusOnline = ()=> {
-    const userInfo = JSON.parse(localStorage.getItem('user'))
-    if(userInfo) {
-      socketRef.current = io(import.meta.env.VITE_BASE_URL);
+  const setUserStatusOnline = (userId, username) => {
+    console.log("from set user status", userId, username)
+    socketRef.current = io(import.meta.env.VITE_BASE_URL);
+
+    const data = {
+      userId,
+      username,
     }
-      const data = {
-        userId: userInfo._id,
-        username: userInfo.username
-      }
-      socketRef.current.emit('add_user',data);
-      socketRef.current.emit('login_user',userInfo._id);
+    socketRef.current.emit('add_user', data);
+    socketRef.current.emit('login_user', userId);
   }
 
   const loginUser = async (formData) => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/login`, formData);
 
-      localStorage.setItem('token', response.data.token)
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      setUser(response.data.user)
+      dispatch({ type: "SET_LOADING_TRUE" });
+      dispatch({ type: "SAVE_USER_INFO", payload: response.data });
+      dispatch({ type: "SET_LOADING_FALSE" });
 
-      setUserStatusOnline();
-      
+
+      setUserStatusOnline(response.data.user._id, response.data.user.username);
+
     } catch (error) {
       console.log(error)
     }
@@ -65,15 +62,18 @@ const UserProvider = ({ children }) => {
   useEffect(() => {
     console.log("im changing")
   }, [socketRef.current])
-  
+
 
   const registerUser = async (formData) => {
     try {
 
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/register`, formData);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      setUser(response.data.user)
+
+      dispatch({ type: "SET_LOADING_TRUE" });
+      dispatch({ type: "SAVE_USER_INFO", payload: response.data });
+      dispatch({ type: "SET_LOADING_FALSE" });
+
+      setUserStatusOnline(response.data.user._id, response.data.user.username);
 
     } catch (error) {
       console.log(error.response.status, error.response.data.message)
@@ -82,13 +82,14 @@ const UserProvider = ({ children }) => {
 
   const verifyToken = async () => {
     console.log("verify token running")
-    setIsLoading(true)
+    dispatch({ type: "SET_LOADING_TRUE" });
     try {
       const token = localStorage.getItem('token');
 
       if (!token) {
-        setUser(null)
-        setIsLoading(false)
+        dispatch({ type: "RESET_USER_STATE" });
+
+        dispatch({ type: "SET_LOADING_FALSE" });
         return
       } else {
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/auth/verify_token`, {
@@ -96,25 +97,22 @@ const UserProvider = ({ children }) => {
             token
           }
         })
-          setUser(response.data.user)
-          localStorage.setItem('user', JSON.stringify(response.data.user))
-  
-          setUserStatusOnline();
-          setIsLoading(false)
-      }
+        dispatch({ type: "SAVE_USER_INFO", payload: response.data });
 
-    
+        setUserStatusOnline(response.data.user._id, response.data.user.username);
+
+        dispatch({ type: "SET_LOADING_FALSE" });
+
+      }
     } catch (error) {
-      setUser(null)
-      localStorage.clear()
+      dispatch({ type: "RESET_USER_STATE" });
     }
 
   }
 
   const logoutUser = async () => {
-    socketRef.current.emit('set_status_to_ofline',user._id);
-    localStorage.clear()
-    setUser(null)
+    socketRef.current.emit('set_status_to_ofline', user._id);
+    dispatch({ type: "RESET_USER_STATE" });
     navigate('/')
   }
 
@@ -125,7 +123,7 @@ const UserProvider = ({ children }) => {
           token: localStorage.getItem('token')
         }
       })
-      setTempAvatar(selectedAvatar)
+      dispatch({ type: "UPDATE_USER_INFO", payload: { fieldName: tempAvatar, updatedValue: selectedAvatar } })
       navigate('user')
     } catch (error) {
       console.log(error)
@@ -134,14 +132,19 @@ const UserProvider = ({ children }) => {
 
   const fetchContacts = async () => {
     try {
-
-      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/auth/fetch_contacts`, {
-        headers: {
-          token: localStorage.getItem('token'),
+      const token =  localStorage.getItem('token');
+      console.log("token from fetch contacts",token)
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/auth/fetch_contacts`,
+        {
+          headers: {
+            token,
+          }
         }
-      })
+    )
       const data = response.data;
-      setContacts(data.contacts)
+
+      dispatch({ type: "SET_CONTACTS", payload: response.data.contacts })
+
     } catch (error) {
       console.log(error)
     }
@@ -196,9 +199,10 @@ const UserProvider = ({ children }) => {
   return (
     <UserContext.Provider
       value={{
-        user, setUser, loginUser, registerUser, logoutUser,
+        user,
+        loginUser, registerUser, logoutUser,
         contacts, fetchContacts,
-        avatars, setAvatars, uploadAvatar, tempAvatar,
+        uploadAvatar, tempAvatar,
         selectedChat, setSelectedChat,
         message, setMessage, saveMessageToDB,
         socketRef, isMounted,
@@ -216,4 +220,4 @@ const useUser = () => {
 };
 
 export default UserProvider;
-export { useUser };
+export { useUser, initialUserState };

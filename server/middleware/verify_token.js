@@ -8,6 +8,7 @@ const verifyTokenMiddleware = (req, res, next) => {
     const userInfo = jwt.verify(token, process.env.JWT_SECRET_KEY);
     req.userId = userInfo.userId;
     req.user = userInfo;
+    req.token = token;
     next();
   } catch (error) {
     res.status(400).json({ message: 'Invalid token' });

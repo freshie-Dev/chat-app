@@ -34,15 +34,23 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-
-        const user = await User.findOne({ username });
+        
+        let user = await User.findOne({ username }).select('+password');
         if (!user) {
             return res.status(400).json({ message: 'Invalid username or password' });
         }
-
+       
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
-
+       
         if (user.password === password) {
+           user = {
+            _id: user._id,
+            email: user.email,
+            isAvatarSet: user.isAvatarSet,
+            avatar: user.avatar,
+            username: user.username
+           }
+            
             res.send({ user, success: true, message: 'Login successful', token });
         } else {
             return res.status(400).json({ message: 'Invalid username or password' });
@@ -56,10 +64,11 @@ router.post('/login', async (req, res) => {
 router.get('/verify_token', verifyTokenMiddleware, async (req, res) => {
     try {
         const userId = req.userId;
+        const token = req.token;
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ message: 'User not found' });
         
-        res.status(200).json({ user, success: true, message: "User verified" });
+        res.status(200).json({ user, token, success: true, message: "User verified" });
     } catch (error) {
         res.status(500).json({ success: false, error: 'Server error occurred', message: error.message });
     }

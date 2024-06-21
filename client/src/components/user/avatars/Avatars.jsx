@@ -6,9 +6,11 @@ import { Link } from 'react-router-dom';
 import { useUser } from '../../../context/UserContext';
 
 const Avatars = () => {
-    const {uploadAvatar, avatars, setAvatars} = useUser()
+    const {uploadAvatar, user} = useUser()
+    const [avatars, setAvatars] = useState([]);
     const [selectedAvatarIndex, setSelectedAvatarIndex] = useState(null);
 
+    console.log("from avatars page",user)
     useEffect(() => {
         const fetchAvatars = async () => {
             try {

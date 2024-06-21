@@ -6,7 +6,7 @@ import UserProvider from './context/UserContext.jsx'
 import { BrowserRouter } from 'react-router-dom'
 import { SnackbarProvider } from 'notistack';
 import StyleProvider from './context/StylesContext.jsx'
-import AuthProvider from './context/AuthContext.jsx'
+import SocketProvider from './context/SocketContext.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   // <React.StrictMode>
@@ -21,9 +21,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <StyleProvider>
         <UserProvider>
-          <AuthProvider>
+          <SocketProvider>
             <App />
-          </AuthProvider>
+          </SocketProvider>
         </UserProvider>
       </StyleProvider>
     </BrowserRouter>

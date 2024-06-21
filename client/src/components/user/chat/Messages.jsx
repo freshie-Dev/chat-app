@@ -22,10 +22,12 @@ const Messages = () => {
           setArrivalMessage({fromSelf: false, message, timeStamp: date}) 
         });
   } 
-  useEffect(() => {
-    console.log("im running")
-    handleMessageRecieve()
-  }, [socketRef.current])
+
+  socketRef.current.on("message_recieve", handleMessageRecieve)
+  // useEffect(() => {
+  //   console.log("im running")
+  //   handleMessageRecieve()
+  // }, [socketRef.current])
 
   useEffect(() => {
     arrivalMessage && setMessages(prevMessages => {return [...prevMessages, arrivalMessage]})
