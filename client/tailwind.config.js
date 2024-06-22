@@ -12,10 +12,15 @@ export default {
         blinkingBg: {
           '0%, 100%': { color: '#3B3B3B' },
           '50%': { color: '#EEEEEE' },
+        },
+        moveLeftRight: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '50%': { transform: 'translateX(7px)' },
         }
       },
       animation: {
         blinkingBg: 'blinkingBg 2s ease-in-out infinite',
+        moveLeftRight: 'moveLeftRight 1s ease-in-out infinite',
       },
       colors: {
         // Add your custom colors here

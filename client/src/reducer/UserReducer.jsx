@@ -5,8 +5,6 @@ const userReducer = (state, action) => {
   const key = action.type;
   switch (key) {
     case "SAVE_USER_INFO":
-      // console.log("from save user info", action.payload)
-      console.log(action.payload)
       localStorage.setItem('token', action.payload.token)
       localStorage.setItem('user', JSON.stringify(action.payload.user));
       return {
@@ -17,9 +15,16 @@ const userReducer = (state, action) => {
 
     case "UPDATE_USER_INFO":
       const { fieldName, updatedValue } = action.payload
+      let tempUser = JSON.parse(localStorage.getItem('user'))
+      tempUser = {
+        ...tempUser,
+        [fieldName]: updatedValue,
+        isAvatarSet: true,
+      }
+      console.log("temp User", tempUser)
       return {
         ...state,
-        [fieldName]: updatedValue
+        user: tempUser,
       };
       break;
 

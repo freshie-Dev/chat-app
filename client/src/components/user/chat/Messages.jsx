@@ -34,7 +34,6 @@ const Messages = () => {
 
 
   if (messages.length === 0) {
-    console.log(messages.length)
     return (
       <div className='w-full h-full flex justify-center items-center '>
         <h2 className='bg-c3 text-c4 py-3 px-6 rounded-full'>Chat is empty</h2>

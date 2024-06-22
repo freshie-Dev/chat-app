@@ -2,15 +2,16 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import Button from '../../../styled-components/Button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../../context/UserContext';
+import { TbPlayerTrackNextFilled } from "react-icons/tb";
 
 const Avatars = () => {
-    const {uploadAvatar, user} = useUser()
+    const navigate = useNavigate();
+    const { uploadAvatar, user } = useUser()
     const [avatars, setAvatars] = useState([]);
     const [selectedAvatarIndex, setSelectedAvatarIndex] = useState(null);
 
-    console.log("from avatars page",user)
     useEffect(() => {
         const fetchAvatars = async () => {
             try {
@@ -33,23 +34,26 @@ const Avatars = () => {
         fetchAvatars();
     }, []);
 
-    useEffect(() => {
-      console.log(selectedAvatarIndex)
-    }, [selectedAvatarIndex])
-    
- 
+
+
 
     return (
         <Container className="bg-c3">
-            <h1 className={`logo-font text-c4 my-4 md:my-8 ${selectedAvatarIndex === null && 'animate-blinkingBg'}`}>
+            <div className='w-full flex justify-end md:pr-4  absolute md:top-10 md:right-10 top-1 right-1 text-c4 hover:text-c1'>
+                <div onClick={()=> navigate("/user")} className='flex items-center md:border-2 border-c4 md:py-2 md:px-4 p-[6px] rounded-full'>
+                    <p className='float-right text-lg px-2'>Skip</p>
+                    <TbPlayerTrackNextFilled className=' animate-moveLeftRight' size={25} />
+                </div>
+            </div>
+            <h1 className={`font-bold text-c4 my-4 md:my-8 ${selectedAvatarIndex === null && 'animate-blinkingBg '}`}>
                 Select your avatar
             </h1>
             <div className="md:flex gap-6 rounded-full p-2 border-2 border-c1">
                 {avatars.map((avatar, index) => {
                     return (
-                    
+
                         <img
-                            onClick={() => { setSelectedAvatarIndex((prevVal) =>{ return (prevVal === index ? null : index)})}}
+                            onClick={() => { setSelectedAvatarIndex((prevVal) => { return (prevVal === index ? null : index) }) }}
                             className={`w-[70px] md:w-[100px] m-6 avatar-shadow rounded-full ${selectedAvatarIndex === index && 'selected-avatar'
                                 }`}
                             key={index}
@@ -57,13 +61,11 @@ const Avatars = () => {
                             alt={`Avatar ${index + 1}`}
                         />
                     )
-                } )}
+                })}
             </div>
-            {/* <Link to="/user"> */}
-                <Button onClick={()=> uploadAvatar(avatars[selectedAvatarIndex])} disabled={selectedAvatarIndex === null} margin="40px auto" width="150px" height="50px" borderRadius="30px" fontSize="1.2rem">
-                    Proceed
-                </Button>
-            {/* </Link> */}
+            <Button onClick={() => uploadAvatar(avatars[selectedAvatarIndex])} disabled={selectedAvatarIndex === null} margin="40px auto" width="150px" height="50px" borderRadius="30px" fontSize="1.2rem">
+                Proceed
+            </Button>
         </Container>
     );
 };

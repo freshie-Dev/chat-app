@@ -114,27 +114,3 @@ input:focus {
         }
     }
     `;
-
-// useEffect(() => {
-//     // Establish the Socket.IO connection only once, when the component mounts
-//     socketRef.current = io.connect(import.meta.env.VITE_BASE_URL);
-//     return () => {
-//         // Clean up the connection when the component unmounts
-//         socketRef.current.disconnect();
-//     };
-// }, []);
-
-
-
-
-// useEffect(() => {
-//     setCount(count + 1)
-//     const id = setInterval(() => setCount((count) => count + 1), 1000);
-//     socketRef.current.on("recieve_message", (data)=> {
-//         console.log(count)
-//         alert(data.message)
-//     })
-//     return () => {
-//         clearInterval(id);
-//     }
-// }, [socketRef.current])

@@ -34,6 +34,7 @@ const Login = () => {
 
 const Container = styled.div`
   display: flex;
+  width: 100%;
   justify-content: center;
   align-items: center;
   padding-top: 50px;

@@ -21,7 +21,7 @@ body {
     justify-content: center;
     align-items: center;
     
-    padding: 50px 80px;
+    /* padding: 50px 80px; */
 
     color: var(--c4)
 
@@ -62,7 +62,6 @@ label {
 
 p {
     font-size: clamp(0.75rem, 0.6447rem + 0.2263vw, 1rem);
-
 }
 
 

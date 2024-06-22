@@ -46,7 +46,6 @@ const ChatProvider = ({ children }) => {
               to
             }
           });
-          console.log(response.data)
           setMessages(response.data.projectedMessages)
         } catch (error) {
           console.log(error)

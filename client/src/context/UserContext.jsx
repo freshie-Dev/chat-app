@@ -103,17 +103,22 @@ const UserProvider = ({ children }) => {
           token: localStorage.getItem('token')
         }
       })
-      dispatch({ type: "UPDATE_USER_INFO", payload: { fieldName: tempAvatar, updatedValue: selectedAvatar } })
+
+      dispatch({ type: "UPDATE_USER_INFO", payload: { fieldName: "avatar", updatedValue: selectedAvatar } })
+
       navigate('user')
     } catch (error) {
       console.log(error)
     }
   }
+  useEffect(() => {
+    console.log(userState.user)
+  }, [userState.user])
+  
 //! fetchContacts
   const fetchContacts = async () => {
     try {
       const token =  localStorage.getItem('token');
-      console.log("token from fetch contacts",token)
       const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/auth/fetch_contacts`,
         {
           headers: {

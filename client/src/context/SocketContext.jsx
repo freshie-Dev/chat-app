@@ -15,7 +15,7 @@ const SocketProvider = ({ children }) => {
   const [messageFromSocket, setMessageFromSocket] = useState({})
 
   useEffect(() => {
-    if (!isMounted.current) {
+    if (!isMounted.current && localStorage.getItem('user')) {
       socketRef.current = io(import.meta.env.VITE_BASE_URL, {
         query: {
           data: localStorage.getItem('user')
@@ -41,7 +41,6 @@ const SocketProvider = ({ children }) => {
 
   //! On recieving message from a user
   const socketMessageRecieve = (message, date) => {
-    console.log("socket message recieving")
     const newMessage = {
       fromSelf: false,
       message,
@@ -53,7 +52,6 @@ const SocketProvider = ({ children }) => {
 
   // socketRef.current.on("message_recieve", (message, date) => socketMessageRecieve(message, date))
   useEffect(() => {
-    console.log(socketRef.current)
     if (socketRef.current) {
       socketRef.current.on("message_recieve", (message, date) => {
         socketMessageRecieve(message, date)

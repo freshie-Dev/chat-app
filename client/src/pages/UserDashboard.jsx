@@ -39,6 +39,7 @@ const UserDashboard = () => {
 export default UserDashboard
 
 const Layout = styled.div`
+padding: 50px 80px;;
 height: 100%;
 width: 100%;
 position: relative;
