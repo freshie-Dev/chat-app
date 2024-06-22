@@ -4,10 +4,9 @@ import styled from 'styled-components';
 import Header from '../header/Header';
 
 const Sidebar = () => {
-    const { fetchContacts, contacts, user, selectedChat, setSelectedChat, fetchMessages, tempAvatar } = useUser();
+    const { fetchContacts, contacts, user, selectedChat, setSelectedChat, tempAvatar } = useUser();
 
     const [selectedChatIndex, setSelectedChatIndex] = useState(null);
-    const [] = useState(null);
 
     let sortedContacts = [...contacts]; // Create a copy of contacts array
 

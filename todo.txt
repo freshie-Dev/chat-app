@@ -13,12 +13,5 @@ DONE:
 <---------------->
 
 PENDING:
-1. create different context for userprofile. (done)
-1. create different context for socket.
-
-
-TEST:
-1. test avatar selection. (done)
-2. test socket functionality.
 
 

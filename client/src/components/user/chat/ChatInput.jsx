@@ -5,13 +5,16 @@ import { MdOutlineEmojiEmotions } from "react-icons/md";
 import styled from 'styled-components';
 import { useUser } from '../../../context/UserContext';
 import useSnack from '../../../utilities/useSnack';
+import { useChat } from '../../../context/ChatContext';
+import { useSocket } from '../../../context/SocketContext';
 
 
 const ChatInput = () => {
 
     const { showError } = useSnack()
-    const { message, setMessage, saveMessageToDB, selectedChat, socketRef, user, setMessages } = useUser();
-    const [count, setCount] = useState(0)
+    const {  selectedChat, user } = useUser();
+    const {socketRef, socketMessageSend} = useSocket()
+    const { message, setMessage, setMessages, saveMessageToDB} = useChat();
 
 
     const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
@@ -30,15 +33,15 @@ const ChatInput = () => {
         if (message.length > 0) {
             setMessage('')
             //* send message using socket
-            socketRef.current.emit('send_message', {
-                to: selectedChat._id,
-                from: user._id,
-                message: message,
-                date
-            })
+            socketMessageSend(user, selectedChat, message, date)
+            // socketRef.current.emit('send_message', {
+            //     to: selectedChat._id,
+            //     from: user._id,
+            //     message: message,
+            //     date
+            // })
             //* save message to database
-            const status = await saveMessageToDB()
-            status !== 200 && showError("Error occured while sending message")
+            saveMessageToDB(user, selectedChat)
 
             //* update the chat with new messages
             setMessages(prevMsgs => [...prevMsgs, { message, fromSelf: true, timeStamp: date }])

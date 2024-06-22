@@ -5,9 +5,11 @@ import { useUser } from '../../../context/UserContext';
 import { PiChatTeardropDotsBold } from "react-icons/pi";
 import { IoMdArrowDropright } from "react-icons/io";
 import { useStyle } from '../../../context/StylesContext';
+import { useSocket } from '../../../context/SocketContext';
 const Header = () => {
     const { user, selectedChat, logoutUser } = useUser()
-    const {showSlider, setShowSlider} = useStyle()
+    const { setUserStatusOfline } = useSocket();
+    const {showSlider, setShowSlider} = useStyle();
 
     return (
         <Container className='w-full h-full px-2 py-2 flex justify-between items-center'>
@@ -24,7 +26,7 @@ const Header = () => {
                 <p className='font-base text-c1 text-medium'>{selectedChat && selectedChat.username}</p>
             </div>}
             <div className='md:block hidden'></div>
-            <div onClick={logoutUser} className='w-[40px] h-[40px] bg-c4 flex justify-center items-center rounded-full logout-button '>
+            <div onClick={() => {logoutUser(); setUserStatusOfline(user._id) }} className='w-[40px] h-[40px] bg-c4 flex justify-center items-center rounded-full logout-button '>
                 <IoMdPower size={20} className='logout-logo text-c1' />
             </div>
         </Container>

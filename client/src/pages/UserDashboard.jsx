@@ -10,7 +10,7 @@ import Welcome from '../components/user/welcome/Welcome'
 import { useStyle } from '../context/StylesContext'
 
 const UserDashboard = () => {
-  const {selectedChat, isMounted } = useUser()
+  const {selectedChat } = useUser()
   const {showSlider} = useStyle()
 
   return (

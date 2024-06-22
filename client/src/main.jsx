@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { SnackbarProvider } from 'notistack';
 import StyleProvider from './context/StylesContext.jsx'
 import SocketProvider from './context/SocketContext.jsx'
+import ChatProvider from './context/ChatContext.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   // <React.StrictMode>
@@ -20,11 +21,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   >
     <BrowserRouter>
       <StyleProvider>
-        <UserProvider>
+        
           <SocketProvider>
-            <App />
+            <ChatProvider>
+              <UserProvider>
+                <App />
+              </UserProvider>
+            </ChatProvider>
           </SocketProvider>
-        </UserProvider>
+        
       </StyleProvider>
     </BrowserRouter>
   </SnackbarProvider >,

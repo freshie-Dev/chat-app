@@ -2,10 +2,14 @@ import axios from 'axios'
 import React, { useEffect, useReducer, useRef, useState } from 'react'
 import { useUser } from '../../../context/UserContext'
 import styled from 'styled-components'
-import {v4} from "uuid"
+import { v4 } from "uuid"
+import { useChat } from '../../../context/ChatContext'
+import { useSocket } from '../../../context/SocketContext'
 
 const Messages = () => {
-  const { fetchMessages, messages, setMessages, selectedChat, socketRef } = useUser();
+  const { selectedChat, user } = useUser();
+  const { messageFromSocket } = useSocket()
+  const { fetchMessages, messages, setMessages } = useChat()
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const scrollRef = useRef();
 
@@ -14,60 +18,49 @@ const Messages = () => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   };
 
-  const handleMessageRecieve = ()=> {
-        console.log("recieving message")
-        socketRef.current.on("message_recieve", (message, date) => {
-          console.log(message)
-          console.log(date)
-          setArrivalMessage({fromSelf: false, message, timeStamp: date}) 
-        });
-  } 
-
-  socketRef.current.on("message_recieve", handleMessageRecieve)
-  // useEffect(() => {
-  //   console.log("im running")
-  //   handleMessageRecieve()
-  // }, [socketRef.current])
+  useEffect(() => {
+    messageFromSocket && setMessages(prevMessages => { return [...prevMessages, messageFromSocket] })
+  }, [messageFromSocket])
 
   useEffect(() => {
-    arrivalMessage && setMessages(prevMessages => {return [...prevMessages, arrivalMessage]})
-  }, [arrivalMessage])
-  
-  useEffect(() => {
-    if(selectedChat) fetchMessages()
+    if (selectedChat) fetchMessages(user, selectedChat)
   }, [selectedChat])
-  
-  useEffect(()=>{
-    scrollRef.current?.scrollIntoView({behavior: "smooth"})
-  },[messages])
-  
+
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
+
 
 
 
   if (messages.length === 0) {
+    console.log(messages.length)
     return (
       <div className='w-full h-full flex justify-center items-center '>
         <h2 className='bg-c3 text-c4 py-3 px-6 rounded-full'>Chat is empty</h2>
       </div>
     )
+  } else {
+    return (
+      <div className='msg-container overflow-scroll border-t-4  border-[#e28e3f] w-full h-full'>
+        <Container className=' flex flex-col pr-2'>
+          {messages.map((message, index) => {
+            return (
+
+              <div ref={scrollRef} key={v4()} className={` p-2 flex   ${message.fromSelf ? "justify-end right" : "left"}  `}>
+                <div className='relative'>
+                  <p className={`text-c4 bg-c2 py-2 px-4 rounded-full   ${message.fromSelf ? "pr-[70px]" : "pr-[70px]"}`}>{message.message}</p>
+                  <span className='text-xs text-[#c4c4c4] absolute bottom-1 right-4'>{formatTime(message.timeStamp)}</span>
+                </div>
+              </div>
+            )
+          })}
+        </Container>
+      </div>
+    )
   }
 
-  return (
-    <div className='msg-container overflow-scroll border-t-4  border-[#e28e3f] w-full h-full'>
-      <Container className=' flex flex-col pr-2 justify-end'>
-        {messages.map((message, index) => {
-          return (
-            <div ref={scrollRef} key={v4()} className={` p-2 flex   ${message.fromSelf ? "justify-end right" : "left"}  `}>
-              <div className='relative'>
-                <p className={`text-c4 bg-c2 py-2 px-4 rounded-full   ${message.fromSelf ? "pr-[70px]" : "pr-[70px]"}`}>{message.message}</p>
-                <span className='text-xs text-[#c4c4c4] absolute bottom-1 right-4'>{formatTime(message.timeStamp)}</span>
-              </div>
-            </div>
-          )
-        })}
-      </Container>
-    </div>
-  )
+
 }
 
 export default Messages
