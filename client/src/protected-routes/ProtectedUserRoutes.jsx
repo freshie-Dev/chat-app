@@ -1,15 +1,14 @@
 import React from 'react'
 import { useUser } from '../context/UserContext'
 import { Navigate, Outlet } from 'react-router-dom'
-import Button from '../styled-components/Button'
 
 const ProtectedUserRoutes = () => {
-  const { user, setUser } = useUser()
-  let userInfo = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : user
-
+  const { user } = useUser()
     if (user) {
+      console.log("going to outlet")
       return  <Outlet />
     } else {
+      console.log("going to login page")
       return <><Navigate to='/' /></>
     }
 

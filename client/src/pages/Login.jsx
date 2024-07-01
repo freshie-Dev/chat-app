@@ -1,23 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useUser } from '../context/UserContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
 
 import styled from 'styled-components';
 import AuthForm from '../custom-components/auth-form/Form';
 
 import AnimatedGlob from '../custom-components/animated-glob/AnimatedGlob';
+import ProtectedUserRoutes from '../protected-routes/ProtectedUserRoutes';
 
 const Login = () => {
 
   const { user } = useUser();
-
   
   if (user) {
-    if (user.isAvatarSet) {
-      return <Navigate to='user' />
+    if (user.profile?.isProfilePictureSet) {
+      
+      // return <Navigate to='/user' />
+      return <Navigate to={<ProtectedUserRoutes/>} />
+      
     } else {
-      return <Navigate to='avatars' />
+      return <Navigate to='/avatars' />
     }
   }
 

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import "./AuthFormStyles.css"
 import { useUser } from '../../context/UserContext';
+import { useSocket } from '../../context/SocketContext';
 
 const AuthForm = () => {
     const { loginUser, registerUser } = useUser();
+    const {isUserMounted, setIsUserMounted, isUserMountedRef} = useSocket()
     //! LOGIN -------------------
     const [loginFormData, setLoginFormData] = useState({
         username: '',
@@ -13,10 +15,16 @@ const AuthForm = () => {
         const { name, value } = e.target;
         setLoginFormData({ ...loginFormData, [name]: value });
     };
+
     const handleLoginSubmit = async (e) => {
+        console.log("login submit running")
         e.preventDefault();
-        loginUser(loginFormData)
+        await loginUser(loginFormData,() => {
+            isUserMountedRef.current = false;
+            setIsUserMounted(!isUserMounted);
+          })
     };
+    
     //! REGISTER -------------------
     const [registerFormData, setRegisterFormData] = useState({
         username: '',
@@ -29,12 +37,16 @@ const AuthForm = () => {
         setRegisterFormData({ ...registerFormData, [name]: value });
     };
     const handleRegisterSubmit = async (e) => {
+        
         e.preventDefault();
         if (registerFormData.password !== registerFormData.confirmPassword) {
             alert("passwords do not match")
             return
         }
-        registerUser(registerFormData)
+        await registerUser(registerFormData, () => {
+            isUserMountedRef.current = false;
+            setIsUserMounted(!isUserMounted);
+          })
     };
     return (
         <div className="main">

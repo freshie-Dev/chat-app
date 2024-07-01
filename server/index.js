@@ -2,15 +2,20 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 
-const {connectToMongoDB, User} = require('./schema.js')
+const { connectToMongoDB, User } = require('./schema.js')
 
-const  {Server} = require('socket.io')
+const { Server } = require('socket.io')
 
 
 const app = express();
 require('dotenv').config()
 
-app.use(bodyParser.json())
+// Increase the limit for JSON payloads
+app.use(bodyParser.json({ limit: '10mb' })); // Adjust the limit as needed
+
+// Increase the limit for URL-encoded payloads
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+
 app.use(cors())
 
 //! Routes
@@ -41,60 +46,58 @@ global.onlineUsers = new Map();
 
 io.on('connection', async (socket) => {
     const data = JSON.parse(socket.handshake.query.data);
-    onlineUsers.set(socket.id, [{socketId: socket.id, userId: data._id,  username: data.username}])
+    onlineUsers.set(socket.id, [{ socketId: socket.id, userId: data._id, username: data.username }])
+    console.log(onlineUsers)
     const userId = data._id;
-    await User.findOneAndUpdate({_id: userId}, {onlineStatus: true})
-    console.log("user connectedasda")
+    await User.findOneAndUpdate({ _id: userId }, { onlineStatus: true })
+    console.log("user connected:", data.username, " | ", socket.id)
 
-
-    //! handle user logout
-    socket.on("set_status_to_ofline", async (userId) => {
-        const user = await User.findOneAndUpdate({_id: userId}, {onlineStatus: false}, {new: true}).select('username email onlineStatus')
-        
-        for (let [key, value] of onlineUsers.entries()) {
-            if (value.some(user => user.userId === userId)) {
-                // Remove the user from the map
-                onlineUsers.delete(key);
-                break; // Exit the loop once the user is found and removed
-            }
-        }
-        socket.disconnect(true);
-    })
     //! handle send message & recieve message
-    socket.on("send_message", (data)=> {
+    socket.on("send_message", (data) => {
         let sendUserSocket;
         for (let [key, value] of onlineUsers.entries()) {
             if (value.some(user => user.userId === data.to)) {
                 sendUserSocket = key
-                
+
                 break; // Exit the loop once the user is found and removed
             }
         }
-        if(sendUserSocket) {
-            console.log("this is the socket key", sendUserSocket)
+        if (sendUserSocket) {
             const message = data.message;
             const date = data.date
             socket.to(sendUserSocket).emit('message_recieve', message, date)
         }
     })
 
+    //! handle user logout
+    socket.on("set_status_to_ofline", async (userId) => {
+        const user = await User.findOneAndUpdate({ _id: userId }, { onlineStatus: false }, { new: true }).select('username email onlineStatus')
+
+        // for (let [key, value] of onlineUsers.entries()) {
+        //     if (value.some(user => user.userId === userId)) {
+        //         // Remove the user from the map
+        //         onlineUsers.delete(key);
+        //         break; // Exit the loop once the user is found and removed
+        //     }
+        // }
+        socket.disconnect(true);
+    })
+
     //! Handle disconnections
-    socket.on('disconnect',  async() => {
+    socket.on('disconnect', async () => {
 
-        const sendUserSocket = onlineUsers.get(socket.id);
-        if(sendUserSocket) {
-            const disconnectedUserId = sendUserSocket[0].userId;
-            await User.findOneAndUpdate({_id: disconnectedUserId}, {onlineStatus: false})
-            onlineUsers.delete(sendUserSocket[0].socketId)
-        }
+        const sendUserSocket = onlineUsers.get(socket.id)[0];
+        const disconnectedUserId = sendUserSocket.userId;
+        await User.findOneAndUpdate({ _id: disconnectedUserId }, { onlineStatus: false })
+        onlineUsers.delete(sendUserSocket.socketId)
+        console.log("user disconnect:", sendUserSocket.username, " | ", socket.id)
 
-      console.log(`User disconnected: ${socket.id}`);
 
     });
-  
+
     //! Handle errors
     socket.on('error', (error) => {
-      console.error(`Error occurred: ${error}`);
+        console.error(`Error occurred: ${error}`);
     });
-  });
+});
 

@@ -8,22 +8,37 @@ const SocketProvider = ({ children }) => {
 
 
   const socketRef = useRef(null);
-  const isMounted = useRef(false)
-  // socketRef.current = io(import.meta.env.VITE_BASE_URL);
+  const isUserMountedRef = useRef(false)
+  const [isUserMounted, setIsUserMounted] = useState(false)
 
 
   const [messageFromSocket, setMessageFromSocket] = useState({})
 
   useEffect(() => {
-    if (!isMounted.current && localStorage.getItem('user')) {
+    const user = JSON.parse(localStorage.getItem('user'))
+
+    if (!isUserMountedRef.current && localStorage.getItem('user')) {
       socketRef.current = io(import.meta.env.VITE_BASE_URL, {
         query: {
-          data: localStorage.getItem('user')
+          data: JSON.stringify({
+            _id: user._id,
+            username: user.username
+          })
         }
       })
+      isUserMountedRef.current = true
     }
-  }, [isMounted])
-
+  }, [isUserMounted])
+  // useEffect(() => {
+  //   if (!isUserMounted && localStorage.getItem('user')) {
+  //     socketRef.current = io(import.meta.env.VITE_BASE_URL, {
+  //       query: {
+  //         data: localStorage.getItem('user')
+  //       }
+  //     });
+  //     setIsUserMounted(true);
+  //   }
+  // }, [isUserMounted]);
 
   //! set user status ofline
   const setUserStatusOfline = (userId) => {
@@ -64,7 +79,9 @@ const SocketProvider = ({ children }) => {
       value={{
         setUserStatusOfline,
         socketMessageSend,
-        messageFromSocket, setMessageFromSocket
+        messageFromSocket, setMessageFromSocket,
+        setIsUserMounted,isUserMounted,
+        isUserMountedRef
       }}
     >
       {children}

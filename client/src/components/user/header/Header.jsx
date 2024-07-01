@@ -6,9 +6,12 @@ import { PiChatTeardropDotsBold } from "react-icons/pi";
 import { IoMdArrowDropright } from "react-icons/io";
 import { useStyle } from '../../../context/StylesContext';
 import { useSocket } from '../../../context/SocketContext';
+
+import userBlackIcon from "../../../assets/images/user-icon-black.png"
+
 const Header = () => {
     const { user, selectedChat, logoutUser } = useUser()
-    const { setUserStatusOfline } = useSocket();
+    const { setUserStatusOfline, isUserMountedRef  } = useSocket();
     const {showSlider, setShowSlider} = useStyle();
 
     return (
@@ -21,12 +24,12 @@ const Header = () => {
                 <IoMdArrowDropright size={25} className={`m-0 p-0 ${showSlider ? "show" : "hide"}`} />
             </div>
 
-            {selectedChat && <div className='flex items-center gap-2 bg-c4 rounded-md px-2 h-full min-w-[220px]'>
-                <img width={45} src={selectedChat && selectedChat.avatar} alt="" />
+            {selectedChat && <div className=' flex items-center gap-2 bg-c4 rounded-md px-2 h-full min-w-[220px]'>
+                <img className='w-[40px] h-[40px] object-cover rounded-[50%]'  src={selectedChat.profile.isProfilePictureSet ? selectedChat.profile.profilePicture : userBlackIcon} alt="" />
                 <p className='font-base text-c1 text-medium'>{selectedChat && selectedChat.username}</p>
             </div>}
             <div className='md:block hidden'></div>
-            <div onClick={() => {logoutUser(); setUserStatusOfline(user._id) }} className='w-[40px] h-[40px] bg-c4 flex justify-center items-center rounded-full logout-button '>
+            <div onClick={() => {logoutUser(()=> {isUserMountedRef.current=false; setUserStatusOfline(user._id)})  }} className='w-[40px] h-[40px] bg-c4 flex justify-center items-center rounded-full logout-button '>
                 <IoMdPower size={20} className='logout-logo text-c1' />
             </div>
         </Container>

@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import UserDashboard from './pages/UserDashboard'
 import Register from './pages/Register'
 import Login from './pages/Login'
@@ -11,29 +11,19 @@ import ProtectedUserRoutes from './protected-routes/ProtectedUserRoutes'
 import Unauthorized from './pages/Unauthorized'
 import Account from './pages/Account'
 import { ThemeProvider } from 'styled-components'
-import StyledButton from './styled-components/Button'
 import Avatars from './components/user/avatars/Avatars'
+import Profile from './components/user/profile/Profile'
 
 function App() {
+  const [theme, settheme] = useState({})
+  const location = useLocation()
+  useEffect(() => {
+    localStorage.setItem('location', location.pathname)
+    console.log(location.pathname)
 
-  const lightTheme = {
-    primary: '#fff',
-    secondary: '#000',
-  };
-
-  const darkTheme = {
-    primary: '#000',
-    secondary: '#fff',
-  };
-  const [theme, setTheme] = useState(lightTheme);
-
-  const toggleTheme = () => {
-    if (theme === lightTheme) {
-      setTheme(darkTheme)
-    } else {
-      setTheme(lightTheme)
-    }
-  };
+  }, [location])
+  
+  
   return (
     <ThemeProvider theme={theme}>
       <Routes>
@@ -48,7 +38,8 @@ function App() {
         {/* Protected User Routes */}
         <Route element={<ProtectedUserRoutes />}>
           <Route element={<Avatars />} path='avatars' />
-          <Route element={<UserDashboard />} path='user' />
+          <Route element={<UserDashboard />} path='user'/>
+          <Route element={<Profile/>} path='profile'/>
         </Route>
 
         {/* Protected Admin Routes */}

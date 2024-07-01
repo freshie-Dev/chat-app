@@ -6,7 +6,7 @@ const userReducer = (state, action) => {
   switch (key) {
     case "SAVE_USER_INFO":
       localStorage.setItem('token', action.payload.token)
-      localStorage.setItem('user', JSON.stringify(action.payload.user));
+      // localStorage.setItem('user', JSON.stringify(action.payload.user));
       return {
         ...state,
         user: action.payload.user
@@ -14,14 +14,23 @@ const userReducer = (state, action) => {
       break;
 
     case "UPDATE_USER_INFO":
-      const { fieldName, updatedValue } = action.payload
+      const user = action.payload;
+      return {
+        ...state,
+        user,
+      };
+      break;
+
+    case "UPDATE_PROFILE_PICTURE":
       let tempUser = JSON.parse(localStorage.getItem('user'))
       tempUser = {
         ...tempUser,
-        [fieldName]: updatedValue,
-        isAvatarSet: true,
+        profile: {
+          ...tempUser.profile,
+          profilePicture: action.payload,
+          isProfilePictureSet: true,
+        }
       }
-      console.log("temp User", tempUser)
       return {
         ...state,
         user: tempUser,
@@ -41,7 +50,6 @@ const userReducer = (state, action) => {
         contacts: action.payload
       }
 
-
     case "SET_LOADING_TRUE":
       return {
         ...state,
@@ -54,19 +62,6 @@ const userReducer = (state, action) => {
         isLoading: false
       };
       break;
-
-    case "UPDATE_USER_INFO":
-      const storedUserData = JSON.parse(localStorage.getItem("userinfo"));
-      storedUserData.username = action.payload.username;
-      localStorage.setItem("userinfo", JSON.stringify(storedUserData));
-
-      return {
-        ...state,
-        loggedInUserInfo: {
-          ...state.loggedInUserInfo,
-          username: action.payload.username,
-        },
-      };
 
     case "SET_LOAIDNG_TRUE":
       return {

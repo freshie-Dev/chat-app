@@ -11,7 +11,14 @@ import { useStyle } from '../context/StylesContext'
 
 const UserDashboard = () => {
   const {selectedChat } = useUser()
-  const {showSlider} = useStyle()
+  const {showSlider, setShowSlider} = useStyle()
+
+  useEffect(() => {
+    return () => {
+      setShowSlider(false)
+    }
+  }, [])
+  
 
   return (
     <Layout>
@@ -40,8 +47,9 @@ export default UserDashboard
 
 const Layout = styled.div`
 padding: 50px 80px;;
-height: 100%;
+height: 100vh;
 width: 100%;
+overflow: hidden;
 position: relative;
   display: grid;
   grid-template-columns: 30% 70%;
@@ -51,6 +59,7 @@ position: relative;
   "sidebar section";
    
   @media (max-width: 768px) {
+    height: 100vh;
     border-radius: 0;
     padding: 0;
     grid-template-columns: 1fr;

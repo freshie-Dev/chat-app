@@ -42,7 +42,7 @@ const Messages = () => {
   } else {
     return (
       <div className='msg-container overflow-scroll border-t-4  border-[#e28e3f] w-full h-full'>
-        <Container className=' flex flex-col pr-2'>
+        <Container className=' flex flex-col justify-end pr-2 min-h-[100%]'>
           {messages.map((message, index) => {
             return (
 

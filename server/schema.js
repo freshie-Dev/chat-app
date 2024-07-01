@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
             type: String,
             trim: true,
         },
-        dateOfBirth: {
+        dob: {
             type: Date,
         },
         gender: {
@@ -42,6 +42,10 @@ const userSchema = new mongoose.Schema({
         },
         profilePicture: {
             type: String,
+        },
+        isProfilePictureSet: {
+            type: Boolean,
+            default: false
         }
     },
     

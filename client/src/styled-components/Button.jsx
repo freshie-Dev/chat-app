@@ -23,6 +23,7 @@ const Button = styled.button`
   width: ${(props) => props.width || '200px'};
   height: ${(props) => props.height || '40px'};
   margin: ${(props) => props.margin || '6px auto'};
+  padding: ${(props) => props.padding || ''};
   font-size: ${(props) => props.fontSize || '1rem'};
   font-weight: ${(props) => props.fontWeight || 'bold'};
   border: ${(props) => props.border || 'none'};

@@ -1,0 +1,90 @@
+.form__group {
+    position: relative;
+    padding: 13px 0 0;
+  }
+  
+  .form__field {
+    font-family: inherit;
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--c4);
+    padding: 7px 0;
+    background: transparent;
+    transition: border-color 0.2s;
+   
+  }
+  
+  .form__field__2 {
+    font-family: inherit;
+    width: 100%;
+    border: none;
+    font-size: 15px;
+    font-weight: 300;
+    color: #fff;
+    padding: 9px 0;
+    background: transparent;
+    transition: border-color 0.2s;
+  }
+
+  .form__field__2:focus, .form__field:focus{
+    outline: none;
+  }
+
+  .form__field::placeholder {
+    color: transparent;
+  }
+  
+  .form__field:placeholder-shown ~ .form__label {
+    font-size: 17px;
+    cursor: text;
+    top: 20px;
+  }
+
+
+  
+  .form__label {
+    position: absolute;
+    top: -5px;
+    display: block;
+    transition: 0.2s;
+    font-size: 17px;
+    font-weight: 500;
+    color: rgb(70, 69, 69);
+    pointer-events: none;
+  }
+  
+  /* .form__field:focus {
+    padding-bottom: 6px;
+    font-weight: 700;
+    border-width: 3px;
+    border-image: linear-gradient(to right, #7e2e2e, #1c91d4);
+    border-image: linear-gradient(to );
+    border-image-slice: 1;
+  } */
+  
+  .form__field:focus ~ .form__label {
+    position: absolute;
+    top: -5px;
+    display: block;
+    transition: 0.2s;
+    font-size: 17px;
+    color: var(--c1);
+    font-weight: 700;
+  }
+
+  .form__field ~ div {
+    border-bottom: rgb(70, 69, 69) 2px solid;
+    border-radius: 10px;
+  }
+  .form__field:focus ~ div {
+    border-bottom: rgb(70, 69, 69) 3px solid;
+    
+  }
+  
+  /* reset input */
+  .form__field:required, .form__field:invalid {
+    box-shadow: none;
+  }
