@@ -7,14 +7,14 @@ import { BiSolidMessageSquareEdit } from 'react-icons/bi'
 import { FaRegEye, FaUpload } from "react-icons/fa";
 import { MdFileUpload } from "react-icons/md";
 import { RxReset } from 'react-icons/rx';
-import { compressImage, imageToBase64 } from '../../../utilities/Helpers';
+import { compressImage } from '../../../utilities/Helpers';
 
 
 const ProfilePicture = ({ user, formData, setFormData }) => {
     const fileInputRef = useRef(null);
 
     const [isViewerOpen, setIsViewerOpen] = useState(false);
-
+    const [profilePictureSrc, setProfilePictureSrc] = useState(null)
 
     //! open image viewer
     const openImageViewer = useCallback((index) => {
@@ -29,20 +29,27 @@ const ProfilePicture = ({ user, formData, setFormData }) => {
         const file = e.target.files[0];
         try {
             const compressedImage = await compressImage(file);
-            const base64Image = await imageToBase64(compressedImage);
             setFormData(prevValues => {
                 return {
                     ...prevValues,
-                    profilePicture: base64Image
+                    profilePicture: compressedImage
                 }
             })
+
+            const reader = new FileReader()
+
+            reader.onloadend = () => {
+                setProfilePictureSrc(reader.result)
+            }
+            reader.readAsDataURL(compressedImage)
+
         } catch (error) {
             console.error('Error compressing image:', error);
         }
     };
     //! reset profile picture
     const resetProfilePicture = () => {
-        
+        setProfilePictureSrc(null)
        if(user.profile.isProfilePictureSet) {
         setFormData(prevValues => {
             return {
@@ -60,14 +67,12 @@ const ProfilePicture = ({ user, formData, setFormData }) => {
        }
     }
 
+    
+
     return (
         <>
             <div className='group relative mt-2 mb-4 '>
-                <label
-                    style={{ backgroundImage: `url(${formData.profilePicture})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-                    className='w-[70px] h-[70px] rounded-full group-hover:brightness-50 duration-100'
-                    htmlFor="profile-picture"
-                ></label>
+                <img src={profilePictureSrc || user.profile.profilePicture || userIconWhite} className='w-[70px] h-[70px] rounded-full group-hover:brightness-50 duration-100' alt="" />
                 <BiSolidMessageSquareEdit
                     onClick={() => fileInputRef.current.click()}
                     size={25}
@@ -88,7 +93,8 @@ const ProfilePicture = ({ user, formData, setFormData }) => {
                 <RxReset onClick={resetProfilePicture} className='hover:scale-125' size={20} />
             </div>
             {isViewerOpen && <div className='absolute p-[50px] z-10 w-full h-full bg-black bg-opacity-50 flex items-center justify-center'>
-                <img className='w-[260px] h-[260px] md:w-[500px] md:h-[500px] object-cover rounded-full' src={formData.profilePicture} alt="" />
+                {/* <img className='w-[260px] h-[260px] md:w-[500px] md:h-[500px] object-cover rounded-full' src={formData.profilePicture} alt="" /> */}
+                <img className='w-[260px] h-[260px] md:w-[500px] md:h-[500px] object-cover rounded-full' src={ profilePictureSrc || user.profile.profilePicture || userIconWhite} alt="" />
                 <span onClick={closeImageViewer} className='absolute right-10 top-10'>X</span>
             </div>}
         </>

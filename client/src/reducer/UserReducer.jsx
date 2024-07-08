@@ -36,6 +36,92 @@ const userReducer = (state, action) => {
         user: tempUser,
       };
       break;
+    
+    case "UPDATE_FRIEND_REQUESTS":
+      let tempReqs = state.user.friendRequests;
+      let updatedFriendRequests;
+      if(tempReqs) {
+        updatedFriendRequests = [...tempReqs, action.payload]
+      } else {
+        updatedFriendRequests = [action.payload]
+      }
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          friendRequests: updatedFriendRequests
+        }
+      };
+      break;
+
+    case "UPDATE_FRIEND_REQUEST_STATUS":
+      let updatedRequests = state.user.friendRequests.map(request => {
+         if (action.payload.friendRequestId === request._id) {
+          return {
+            ...request,
+            status: action.payload.status,
+          }
+         } else {
+          return request
+         }
+      });
+
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          friendRequests: updatedRequests
+        },
+      };
+      break;
+
+    case "UPDATE_NOTIFICATIONS":
+      let tempNotifs = state.user.notifications;
+      console.log(tempNotifs)
+      console.log(action.payload)
+      const newNotifs = [...tempNotifs, action.payload]
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          notifications: newNotifs
+        }
+      };
+      break;
+
+    case "UPDATE_NOTIFICATION_STATUS":
+      let notifications = state.user.notifications;
+      const updatedNotifications = notifications.map(notif => {
+        if (notif.friendRequestId === action.payload.friendRequestObj._id) {
+          return {
+            ...notif,
+            status: action.payload.status
+          }
+        } else {
+          return notif
+        }
+      })
+      console.log(action.payload)
+      console.log(updatedNotifications)
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          notifications: updatedNotifications
+        }
+      };
+      break;
+
+    case "UPDATE_CONTACTS":
+      let tempContacts = state.contacts;
+      let updatedContacts;
+      updatedContacts = [...tempContacts, action.payload]
+      console.log(updatedContacts)
+      return {
+        ...state,
+        contacts: updatedContacts
+      };
+      break;
 
     case "RESET_USER_STATE":
       localStorage.clear();
@@ -49,31 +135,19 @@ const userReducer = (state, action) => {
         ...state,
         contacts: action.payload
       }
-
+      break;
+    
     case "SET_LOADING_TRUE":
       return {
         ...state,
         isLoading: true
       };
       break;
+    
     case "SET_LOADING_FALSE":
       return {
         ...state,
         isLoading: false
-      };
-      break;
-
-    case "SET_LOAIDNG_TRUE":
-      return {
-        ...state,
-        isLoading: true,
-      };
-      break;
-
-    case "SET_LOAIDNG_FALSE":
-      return {
-        ...state,
-        isLoading: false,
       };
       break;
 

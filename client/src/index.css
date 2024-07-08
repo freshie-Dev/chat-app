@@ -56,7 +56,7 @@ label {
 
 p {
     /* font-size: clamp(0.75rem, 0.6447rem + 0.2263vw, 1rem); */
-    font-size: clamp(0.75rem, 0.575rem + 0.7778vw, 1.1rem);
+    font-size: clamp(0.75rem, 0.6333rem + 0.5185vw, 1.1rem);
 }
 
 

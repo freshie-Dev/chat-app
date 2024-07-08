@@ -7,8 +7,11 @@ import Input from '../avatars/Input';
 import userIconWhite from "../../../assets/images/user-icon-white.png";
 import Button from '../../../styled-components/Button';
 import { formatTime } from '../../../utilities/Helpers';
-
+import { IoCopy } from "react-icons/io5";
+import useSnack from "../../../utilities/useSnack"
 const Profile = () => {
+
+  const {showSuccess} = useSnack()
   const { user, updateUserInfo } = useUser();
   const originalFormData = useMemo(() => ({
     profilePicture: user.profile.isProfilePictureSet ? user.profile.profilePicture : userIconWhite,
@@ -29,11 +32,19 @@ const Profile = () => {
     setIsFormDataChanged(hasFormDataChanged());
   }, [formData, originalFormData]);
 
+  useEffect(() => {
+    setFormData(originalFormData)
+  }, [user])
+  
   return (
     <Container className=''>
       <Content>
         <div className='flex justify-center items-center h-[20%] w-[110%] bg-c4 text-c1 rounded-b-[60%]'>
           <h1>Profile</h1>
+        </div>
+        <div className='flex items-center gap-2 cursor-pointer group' onClick={()=> {navigator.clipboard.writeText(user.uniqueId); showSuccess("Unique Id copied")}}>
+          <p className='text-c1 my-4'>Unique ID: <span className='text-[#cecece]'>{user.uniqueId}</span></p>
+          <IoCopy className='group-hover:text-c1 '/>
         </div>
 
         <ProfilePicture user={user} formData={formData} setFormData={setFormData} />
@@ -42,7 +53,7 @@ const Profile = () => {
         {isFormDataChanged && (
           <div className='flex w-[330px] sm:[500px] md:w-[500px] gap-2 my-10 px-4'>
             <Button width="50%"  primary border="2px solid var(--c1)">Cancel</Button>
-            <Button onClick={()=> updateUserInfo(formData)} width="50%" >Save</Button>
+            <Button onClick={()=> {updateUserInfo(formData);}} width="50%" >Save</Button>
           </div>
         )}
       </Content>

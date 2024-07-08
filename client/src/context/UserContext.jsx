@@ -13,8 +13,6 @@ const initialUserState = {
   isLoading: false,
   user: null,
   contacts: [],
-  message: '',
-  messages: [],
 };
 
 const UserProvider = ({ children }) => {
@@ -102,11 +100,17 @@ const UserProvider = ({ children }) => {
   }
   //! Update user profile
   const updateUserInfo = async (formData) => {
-    // console.log(formData)
+    const formDataObj = new FormData();
+    for (const key in formData) {
+      if (formData.hasOwnProperty(key)) {
+        formDataObj.append(key, formData[key]);
+      }
+    }
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/update_user_info`, formData, {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/update_user_info`, formDataObj, {
         headers: {
-          "token": localStorage.getItem('token')
+          'Content-Type': 'multipart/form-data',
+          'token': localStorage.getItem('token')
         }
       })
       dispatch({ type: "UPDATE_USER_INFO", payload: response.data.user })
@@ -116,26 +120,51 @@ const UserProvider = ({ children }) => {
       console.log(error)
     }
   }
+  //! Update User Friend Requests
+  const updateFriendRequests = async (requestObj) => {
+    console.log("imrunning")
+    const token = localStorage.getItem('token')
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/auth/fetch_friend_request`, {
+        params: requestObj, // Use params to send the request object
+        headers: {
+          token
+        }
+      });
+
+      dispatch({ type: "UPDATE_FRIEND_REQUESTS", payload: response.data.friendRequest })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  //! Update User Notifications
+  const updateNotifications = (notificationObj) => {
+    try {
+      dispatch({ type: "UPDATE_NOTIFICATIONS", payload: notificationObj })
+    } catch (error) {
+      console.log(error)
+    }
+  }
   //! Upload profile picture 
   const uploadProfilePicture = async (profilePicture) => {
-    const data = {
-      profilePicture
-    }
+    const formData = new FormData()
+    formData.append('profilePicture', profilePicture)
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/upload_profile_picture`, data, {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/upload_profile_picture`, formData, {
         headers: {
-          token: localStorage.getItem('token')
+          'Content-Type': 'multipart/form-data',
+          'token': localStorage.getItem('token')
         }
-      })
+      });
 
-      dispatch({ type: "UPDATE_PROFILE_PICTURE", payload: profilePicture })
+      dispatch({ type: "UPDATE_PROFILE_PICTURE", payload: response.data.profilePictureUrl })
 
       let user = JSON.parse(localStorage.getItem('user'))
       user = {
         ...user,
         profile: {
           ...user.profile,
-          profilePicture,
+          profilePicture: response.data.profilePictureUrl,
           isProfilePictureSet: true,
         }
       }
@@ -171,8 +200,6 @@ const UserProvider = ({ children }) => {
       console.log(error)
     }
   }
-
-
   //! fetchContacts
   const fetchContacts = async () => {
     try {
@@ -190,6 +217,45 @@ const UserProvider = ({ children }) => {
       console.log(error)
     }
   }
+  //! Update contacts
+  const fetchLatestContact = async () => {
+    try {
+
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/auth/fetch_latest_contact`, {
+        headers: {
+          "token": localStorage.getItem('token')
+        }
+      })
+      console.log(response.data)
+      dispatch({ type: "UPDATE_CONTACTS", payload: response.data.latestFriend })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  //! Update the status of a single friend request
+  const updateFriendRequestStatus = (status, friendRequestId) => {
+    try {
+      dispatch({type: "UPDATE_FRIEND_REQUEST_STATUS", payload: {status, friendRequestId}})
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  //! Update notification status
+  const updateNotification = (data)=> {
+    console.log("running 4")
+    try {
+      dispatch({type: "UPDATE_NOTIFICATION_STATUS",  payload: {status: data.status, friendRequestObj: data.friendRequestObj}})
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    console.log(contacts)
+  }, [contacts])
+  
+
 
   useEffect(() => {
     verifyToken()
@@ -205,7 +271,12 @@ const UserProvider = ({ children }) => {
         contacts, fetchContacts,
         uploadUserDetails,
         selectedChat, setSelectedChat,
-        updateUserInfo, uploadProfilePicture
+        updateUserInfo, uploadProfilePicture,
+        updateFriendRequests,
+        updateNotifications,
+        fetchLatestContact,
+        updateFriendRequestStatus,
+        updateNotification,
       }}
     >
       {isLoading ? <h1>Loading...</h1> : children}

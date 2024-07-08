@@ -7,10 +7,7 @@ import { useUser } from '../../../context/UserContext';
 import { TbPlayerTrackNextFilled } from "react-icons/tb";
 
 import "../../../styles/ProfileInput.css"
-import { BiSolidMessageSquareEdit } from 'react-icons/bi';
-import useSnack from '../../../utilities/useSnack';
-import { compressImage, imageToBase64 } from '../../../utilities/Helpers';
-import { PiFileCLight } from 'react-icons/pi';
+import { compressImage } from '../../../utilities/Helpers';
 
 const Avatars = () => {
     const navigate = useNavigate();
@@ -25,6 +22,9 @@ const Avatars = () => {
 
     const [isViewerOpen, setIsViewerOpen] = useState(false)
     const [uploadedPictureSelected, setUploadedPictureSelected] = useState(false)
+    const [avatarFileObj, setAvatarFileObj] = useState([])
+    const [imageFileObj, setImageFileObj] = useState([])
+
     
     const imageRef = useRef();
 
@@ -36,31 +36,54 @@ const Avatars = () => {
                     const rand = Math.floor(100000 + Math.random() * 900000)
                     const response = await axios.get(`https://api.multiavatar.com/${rand}`);
                     const svg = response.data;
-                    const base64 = btoa(svg); // Convert SVG to base64
-                    return `data:image/svg+xml;base64,${base64}`;
+
+                    const blob = new Blob([svg], { type: 'image/svg+xml' });
+                    const file = new File([blob], "user_avatar", { type: blob.type });
+
+                    const reader = new FileReader()
+
+                    const base64Promise = new Promise((resolve, reject) => {
+                        reader.onloadend = () => {
+                            
+                            resolve(reader.result);
+                        };
+                        reader.onerror = reject;
+                    });
+                    reader.readAsDataURL(file);
+                    const base64Url = await base64Promise;
+                    // Return the base64 URL or file object
+                    setAvatarFileObj(prevVal => {
+                        return [...prevVal, file]
+                    })
+                    return base64Url;
                 });
 
                 const avatarUrls = await Promise.all(avatarPromises);
+                
                 setAvatars(avatarUrls);
             } catch (error) {
                 console.error('Error fetching avatars:', error);
             }
         };
-
-        fetchAvatars();
+        // fetchAvatars();
     }, []);
     
-
     const handleImageChange = async(e)=> {
         const image = e.target.files[0]
         try {
             const compressedImage = await  compressImage(image)
-            const base64Image = await imageToBase64(compressedImage)
-            setProfilePicture(base64Image)
+            
+            //! setting local profile image src
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                setProfilePicture(reader.result)
+            }
+            reader.readAsDataURL(compressedImage)
 
+            setImageFileObj(image)
             setSelectedAvatarIndex(null)
             setUploadedPictureSelected(true)
-            setSelectedImage(base64Image)
+            setSelectedImage(compressedImage)
 
         } catch (error) {
             console.error('Error compressing image:', error)
@@ -71,7 +94,7 @@ const Avatars = () => {
             return (prevVal === index ? null : index) 
         });
         setSelectedImage(prevValue => {
-            return prevValue === avatars[index] ? null : avatars[index]
+            return prevValue === avatarFileObj[index] ? null : avatarFileObj[index]
         })
         setUploadedPictureSelected(false);
     }
@@ -79,7 +102,7 @@ const Avatars = () => {
         setUploadedPictureSelected(!uploadedPictureSelected);
         setSelectedAvatarIndex(null)
         setSelectedImage (prevVal => {
-            return prevVal === profilePicture ? null : profilePicture
+            return prevVal === imageFileObj ? null : imageFileObj
         })
     }
     
@@ -128,7 +151,7 @@ const Avatars = () => {
             <Button border = "2px solid var(--c4)" primary onClick={() => imageRef.current.click()}>Choose From Computer</Button>
 
             {selectedImage && <Button onClick={() => uploadProfilePicture(selectedImage)} border="2px solid var(--c4)" borderRadius = "50px" margin="30px">Proceed</Button>}
-            
+           
 
         </Container>
     );

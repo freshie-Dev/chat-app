@@ -16,8 +16,8 @@ const Login = () => {
   if (user) {
     if (user.profile?.isProfilePictureSet) {
       
-      // return <Navigate to='/user' />
-      return <Navigate to={<ProtectedUserRoutes/>} />
+      return <Navigate to='/user' />
+      // return <Navigate to={<ProtectedUserRoutes/>} />
       
     } else {
       return <Navigate to='/avatars' />

@@ -22,7 +22,14 @@ const formatTime = (timestamp) => {
             maxWidthOrHeight: 1024,
             useWebWorker: true
         });
-        return compressedImage
+        let compressedFile;
+        if (compressedImage instanceof Blob) {
+            compressedFile = new File([compressedImage], file.name, {
+              type: compressedImage.type,
+              lastModified: Date.now(),
+          });
+        }
+        return compressedFile
     } catch (error) {
         console.error('Error compressing image:', error);
     }

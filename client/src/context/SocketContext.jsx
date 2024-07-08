@@ -13,6 +13,11 @@ const SocketProvider = ({ children }) => {
 
 
   const [messageFromSocket, setMessageFromSocket] = useState({})
+  const [requestFromSocket, setRequestFromSocket] = useState(null)
+  const [notificationFromSocket, setNotificationFromSocket] = useState(null)
+
+  const reqRef = useRef(false)
+  const notRef = useRef(false)
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'))
@@ -53,7 +58,6 @@ const SocketProvider = ({ children }) => {
       date
     })
   }
-
   //! On recieving message from a user
   const socketMessageRecieve = (message, date) => {
     const newMessage = {
@@ -63,7 +67,24 @@ const SocketProvider = ({ children }) => {
     }
     setMessageFromSocket(newMessage)
   }
+  //! Sending notification of friend request
+  const socketSendFriendRequest = (receiverObj) => {
+    socketRef.current.emit('send_friend_request', receiverObj)
+  }
+  //! On recieving request from a user
+  const socketNotificationRecieve = (receiverObj) => {
+    setRequestFromSocket(receiverObj)
+  }
+  //! invoke update friend request notification
+  const socketUpdateSenderNotification = (status, friendRequestObj) => {
+    socketRef.current.emit('update_friend_request_notification', {status, friendRequestObj})
+  }
 
+  //! update friend request notification for receiver
+  const socketUpdateNotification = (data) => {
+    console.log("running 2")
+    setNotificationFromSocket(data)
+  }
 
   // socketRef.current.on("message_recieve", (message, date) => socketMessageRecieve(message, date))
   useEffect(() => {
@@ -71,6 +92,17 @@ const SocketProvider = ({ children }) => {
       socketRef.current.on("message_recieve", (message, date) => {
         socketMessageRecieve(message, date)
       });
+      socketRef.current.on("request_receive", (receiverObj) => {
+        socketNotificationRecieve(receiverObj)
+        reqRef.current = true;
+        console.log(reqRef.current)
+      });
+      socketRef.current.on("update_friend_request_notification_receive", (data) => {
+        console.log("running 1")
+        notRef.current = true;
+        socketUpdateNotification(data)
+      });
+      
     }
   }, [socketRef.current])
 
@@ -79,8 +111,16 @@ const SocketProvider = ({ children }) => {
       value={{
         setUserStatusOfline,
         socketMessageSend,
+        socketSendFriendRequest,
         messageFromSocket, setMessageFromSocket,
-        setIsUserMounted,isUserMounted,
+        requestFromSocket,
+        setRequestFromSocket,
+        reqRef,
+        socketUpdateSenderNotification,
+        notificationFromSocket,
+        notRef,
+
+        setIsUserMounted, isUserMounted,
         isUserMountedRef
       }}
     >

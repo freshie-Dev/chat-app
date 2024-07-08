@@ -27,11 +27,12 @@ const UserDashboard = () => {
       </div>
         <aside className='md:block hidden bg-pink-600'>
           <Sidebar />
-
         </aside>
+
         <header>
           <Header />
         </header>
+        
         <section>
           {!selectedChat ? <Welcome /> : <>
             <Messages />

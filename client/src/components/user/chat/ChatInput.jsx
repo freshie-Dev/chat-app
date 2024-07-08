@@ -34,12 +34,6 @@ const ChatInput = () => {
             setMessage('')
             //* send message using socket
             socketMessageSend(user, selectedChat, message, date)
-            // socketRef.current.emit('send_message', {
-            //     to: selectedChat._id,
-            //     from: user._id,
-            //     message: message,
-            //     date
-            // })
             //* save message to database
             saveMessageToDB(user, selectedChat)
 

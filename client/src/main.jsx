@@ -8,6 +8,7 @@ import { SnackbarProvider } from 'notistack';
 import StyleProvider from './context/StylesContext.jsx'
 import SocketProvider from './context/SocketContext.jsx'
 import ChatProvider from './context/ChatContext.jsx'
+import FriendListProvider from './context/FriendListContext.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   // <React.StrictMode>
@@ -21,15 +22,17 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   >
     <BrowserRouter>
       <StyleProvider>
-        
-          <SocketProvider>
-            <ChatProvider>
-              <UserProvider>
+
+        <SocketProvider>
+          <ChatProvider>
+            <UserProvider>
+              <FriendListProvider>
                 <App />
-              </UserProvider>
-            </ChatProvider>
-          </SocketProvider>
-        
+              </FriendListProvider>
+            </UserProvider>
+          </ChatProvider>
+        </SocketProvider>
+
       </StyleProvider>
     </BrowserRouter>
   </SnackbarProvider >,

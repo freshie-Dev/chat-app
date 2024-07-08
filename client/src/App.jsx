@@ -13,15 +13,11 @@ import Account from './pages/Account'
 import { ThemeProvider } from 'styled-components'
 import Avatars from './components/user/avatars/Avatars'
 import Profile from './components/user/profile/Profile'
+import { Tooltip } from 'react-tooltip'
 
 function App() {
   const [theme, settheme] = useState({})
-  const location = useLocation()
-  useEffect(() => {
-    localStorage.setItem('location', location.pathname)
-    console.log(location.pathname)
 
-  }, [location])
   
   
   return (
