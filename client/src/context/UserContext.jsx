@@ -235,26 +235,46 @@ const UserProvider = ({ children }) => {
   //! Update the status of a single friend request
   const updateFriendRequestStatus = (status, friendRequestId) => {
     try {
-      dispatch({type: "UPDATE_FRIEND_REQUEST_STATUS", payload: {status, friendRequestId}})
+      dispatch({ type: "UPDATE_FRIEND_REQUEST_STATUS", payload: { status, friendRequestId } })
     } catch (error) {
       console.log(error)
     }
   }
 
   //! Update notification status
-  const updateNotification = (data)=> {
+  const updateNotification = (data) => {
     console.log("running 4")
     try {
-      dispatch({type: "UPDATE_NOTIFICATION_STATUS",  payload: {status: data.status, friendRequestObj: data.friendRequestObj}})
+      dispatch({ type: "UPDATE_NOTIFICATION_STATUS", payload: { status: data.status, friendRequestObj: data.friendRequestObj } })
     } catch (error) {
       console.log(error)
     }
   }
 
-  useEffect(() => {
-    console.log(contacts)
-  }, [contacts])
-  
+  //! Delete a contact
+  const deleteContact = async (contactId) => {
+    console.log(contactId)
+    try {
+      const response = await axios.delete(`${import.meta.env.VITE_BASE_URL}/auth/delete_contact/${contactId}`, {
+        headers: {
+          "token": localStorage.getItem('token')
+        }
+      });
+      const {deletedFriendId} = response.data;
+
+      dispatch({type: "DELETE_SINGLE_CONTACT", payload: deletedFriendId})
+      setSelectedChat(null)
+
+      return true
+
+
+      // Optionally, you can perform additional actions after successful deletion
+    } catch (error) {
+      console.error(error); // Handle error
+      // Optionally, handle specific errors or show error messages to the user
+    }
+  }
+
 
 
   useEffect(() => {
@@ -277,6 +297,7 @@ const UserProvider = ({ children }) => {
         fetchLatestContact,
         updateFriendRequestStatus,
         updateNotification,
+        deleteContact,
       }}
     >
       {isLoading ? <h1>Loading...</h1> : children}

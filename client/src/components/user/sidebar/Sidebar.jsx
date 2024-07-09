@@ -18,12 +18,15 @@ import { MdCancel } from "react-icons/md";
 import { FaPlus, FaSearch } from 'react-icons/fa';
 import { useFriendList } from '../../../context/FriendListContext';
 import { useSocket } from '../../../context/SocketContext';
+import { useStyle } from '../../../context/StylesContext';
 
 const Sidebar = () => {
     const navigate = useNavigate()
     const { socketSendFriendRequest, requestFromSocket, reqRef, socketUpdateSenderNotification, notificationFromSocket, notRef } = useSocket()
     const { fetchContacts, contacts, user, setSelectedChat, updateFriendRequests, updateNotifications, fetchLatestContact, updateFriendRequestStatus, updateNotification } = useUser();
     const { sendFriendRequest, respondFriendRequest } = useFriendList()
+
+    const {handleShowContactProfile, showContactProfile} = useStyle()
     const { showError, showSuccess } = useSnack()
 
 
@@ -33,6 +36,7 @@ const Sidebar = () => {
     const [addId, setAddId] = useState('')
     const [showNotifications, setShowNotifications] = useState(false)
     const [showFriendRequests, setShowFriendRequests] = useState(false)
+
 
     const handleChatClick = (contact) => {
         setSelectedChatIndex(prevValue => {
@@ -70,7 +74,9 @@ const Sidebar = () => {
             await updateFriendRequestStatus(status.status, status.friendRequestId)
             await fetchLatestContact()
             await socketUpdateSenderNotification(status.status, friendRequestObj)
-
+        } else {
+            await updateFriendRequestStatus(status.status, status.friendRequestId)
+            await socketUpdateSenderNotification(status.status, friendRequestObj)
         }
     }
 
@@ -119,58 +125,64 @@ const Sidebar = () => {
                 <button className='absolute right-6'><FaPlus size={22} className='text-black hover:text-c3' /></button>
             </form>
 
-            <div className=' mx-3 my-2 flex items-center px-3 gap-1 border-2 border-t-c4 border-b-c4 border-r-0 border-l-0'>
                 {/* //! show notifications BUTTON */}
-                <div className=' p-2 flex-1  group' onClick={() => { setShowNotifications(false); setShowFriendRequests(!showFriendRequests) }}>
+                {/* //! show friend requests BUTTON */}
+            <div className=' mx-3 my-2 flex items-center px-3 gap-1 border-2 border-t-c4 border-b-c4 border-r-0 border-l-0'>
+                <div className=' p-2 flex-1  group' onClick={() => { setShowNotifications(false); setShowFriendRequests(!showFriendRequests); }}>
                     <IoMdPersonAdd size={28} className='my- mx-auto text-[#f09b55] group-hover:text-c4' />
                 </div>
                 <div className='w-[1px] bg-c4 h-[80%]' />
-                {/* //! show friend requests BUTTON */}
-                <div className=' p-2 flex-1 group' onClick={() => { setShowFriendRequests(false); setShowNotifications(!showNotifications) }}>
+                <div className=' p-2 flex-1 group' onClick={() => { setShowFriendRequests(false); setShowNotifications(!showNotifications); }}>
                     <IoIosNotifications size={28} className='my- mx-auto text-[#f09b55] group-hover:text-c4' />
                 </div>
             </div>
 
 
             {/* //& Showing friend Requests */}
-            <div className={` overflow-hidden h-0 ${showFriendRequests && "h-[600px] p-2"} flex flex-col-reverse`}>
-                {user.friendRequests && user.friendRequests.map(req => {
-                    console.log(user.friendRequests.length)
-                    if (req) {
-                        return (
-                            <div>
-                                <div className='flex items-center gap-2'>
-                                    <img className='w-[40px] h-[40px] object-cover rounded-full' src={req.profilePicture || userIconBlack} alt="" />
-                                    <div>
-                                        <b>{req.username}</b>
-                                        <p> sent you a Friend request</p>
+            <div className={` overflow-scroll opacity-100   ${showFriendRequests ? " block  p-2 " : "hidden opacity-0"} `}>
+            
+                {user.friendRequests.length > 0 ? (
+                    user.friendRequests.map((req ) => {
+                        if (req ) {
+                            return (
+                                <div key={req._id}>
+                                    <div className='flex items-center gap-2 px-2'>
+                                        <img className='w-[40px] h-[40px] object-cover rounded-full' src={req.profilePicture || userIconBlack} alt="" />
+                                        <div>
+                                            <b>{req.username}</b>
+                                            <p> sent you a Friend request</p>
+                                        </div>
+    
                                     </div>
-
+                                    <div className='flex my-2'>
+    
+                                        {req.status === "pending" ? <> 
+                                            <button onClick={() => { handleRespondFriendRequest("accept", req); }} className='flex-1 bg-c1 rounded-l-full py-[2px] border-r-[1px] border-c4 '><p>Accept</p></button>
+                                            <button onClick={() => { handleRespondFriendRequest("reject", req); }} className='flex-1 bg-c1 rounded-r-full py-[2px]'><p>Reject</p></button></>
+                                            : 
+                                            <>
+                                                <button  className='flex-1 bg-c1 rounded-full py-[2px]'><p>{req.status}</p></button>
+                                            </>
+    
+                                        }
+                                    </div>
+                                    <hr className='my-2 border-[#d39f5c]' />
                                 </div>
-                                <div className='flex my-2'>
-
-                                    {req.status === "pending" ? <> 
-                                        <button onClick={() => { handleRespondFriendRequest("accept", req); }} className='flex-1 bg-c1 rounded-l-full py-[2px] border-r-[1px] border-c4 '><p>Accept</p></button>
-                                        <button onClick={() => { handleRespondFriendRequest("reject", req); }} className='flex-1 bg-c1 rounded-r-full py-[2px]'><p>Reject</p></button></>
-                                        : 
-                                        <>
-                                            <button  className='flex-1 bg-c1 rounded-full py-[2px]'><p>{req.status}</p></button>
-                                        </>
-
-                                    }
-                                </div>
-                                <hr className='my-2 border-[#d39f5c]' />
-                            </div>
-                        )
-                    }
-                })}
+                            )
+                        }
+                    })
+                ) : (
+                    <p className='p-2'>No friend requests yet</p>
+                )}
             </div>
 
             {/* //& Showing notifications */}
-            <div className={` overflow-hidden h-0 ${showNotifications && "h-[500px] p-2"}`}>
-                {user.notifications.length > 0 && user.notifications.map(notif => {
+            <div className={`  overflow-scroll opacity-100   ${showNotifications  ? " block  p-2 " : "hidden opacity-0"}`}>
+                
+                {user.notifications.length > 0 ? 
+                (user.notifications.map(notif => {
                     return (
-                        <>
+                        <div>
                             <div className='flex items-center gap-2'>
                                 <img className='w-[40px] h-[40px] object-cover rounded-full' src={notif.profilePicture || userIconBlack} alt="" />
                                 <div>
@@ -179,9 +191,12 @@ const Sidebar = () => {
                             </div>
                             <p className='flex-1 my-2 bg-c1 rounded-full py-[2px] text-center'>{notif.status}</p>
                             <hr className='my-2 border-[#d39f5c]' />
-                        </>
+                        </div>
                     )
-                })}
+                }))
+                : 
+                <p className='p-2'>No notifications yet</p>
+            }
             </div>
 
             {/* //! search existing contacts */}
@@ -190,7 +205,7 @@ const Sidebar = () => {
                 <FaSearch size={21} className='absolute right-6 text-black hover:text-c3' />
             </div>
 
-            <div className='py-2 pr-3 pl-3  min-w-max relative h-full overflow-scroll'>
+            <div className='py-2 pr-3 pl-3  min-w-max relative overflow-scroll flex-1'>
                 {contacts.map((contact, index) => {
                     console.log(contact)
                     return (
@@ -205,6 +220,7 @@ const Sidebar = () => {
                                 data-tooltip-content="Hello world!"
                                 className='w-[50px] h-[50px] object-cover rounded-[50%] '
                                 src={contact.profile.isProfilePictureSet ? contact.profile.profilePicture : userIconBlack}
+                                onClick={ () => handleShowContactProfile( contact._id)}
                                 alt="DP"
                             />
 

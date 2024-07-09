@@ -12,7 +12,7 @@ import userBlackIcon from "../../../assets/images/user-icon-black.png"
 const Header = () => {
     const { user, selectedChat, logoutUser } = useUser()
     const { setUserStatusOfline, isUserMountedRef  } = useSocket();
-    const {showSlider, setShowSlider} = useStyle();
+    const {showSlider, setShowSlider, handleShowContactProfile} = useStyle();
 
     return (
         <Container className='w-full h-full px-2 py-2 flex justify-between items-center'>
@@ -25,7 +25,7 @@ const Header = () => {
             </div>
 
             {selectedChat && <div className=' flex items-center gap-2 bg-c4 rounded-md px-2 h-full min-w-[220px]'>
-                <img className='w-[40px] h-[40px] object-cover rounded-[50%]'  src={selectedChat.profile.isProfilePictureSet ? selectedChat.profile.profilePicture : userBlackIcon} alt="" />
+                <img onClick={()=> handleShowContactProfile(selectedChat._id)} className='w-[40px] h-[40px] object-cover rounded-[50%]'  src={selectedChat.profile.isProfilePictureSet ? selectedChat.profile.profilePicture : userBlackIcon} alt="" />
                 <p className='font-base text-c1 text-medium'>{selectedChat && selectedChat.username}</p>
             </div>}
             <div className='md:block hidden'></div>

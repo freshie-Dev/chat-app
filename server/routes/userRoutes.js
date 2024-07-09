@@ -259,9 +259,10 @@ router.post('/send_friend_request', verifyTokenMiddleware, async (req, res) => {
         }
 
         // Check if a friend request already exists
-        const existingRequest = receiver.friendRequests.some(request => request.sender.toString() === senderId);
-        if (existingRequest) {
-            return res.status(400).json({ message: "Friend request already sent" });
+        const existingRequest = receiver.friendRequests.find(request => request.sender.toString() === senderId);
+
+        if (existingRequest && existingRequest.status === "pending") {
+            return res.status(400).json({ message: "Friend request already pending" });
         }
 
         // Add sender to receiver's friend requests list
@@ -281,7 +282,7 @@ router.post('/send_friend_request', verifyTokenMiddleware, async (req, res) => {
             receiverId: receiver._id,
             sender: senderId,
             friendRequestId,
-        }
+        };
 
         res.status(200).json({ message: `Friend request sent to ${receiver.uniqueId}`, receiverObj, notificationObj });
     } catch (error) {
@@ -289,6 +290,7 @@ router.post('/send_friend_request', verifyTokenMiddleware, async (req, res) => {
         res.status(500).json({ message: "Error while adding user" });
     }
 });
+
 
 //! Fetch friend request by id
 router.get('/fetch_friend_request', verifyTokenMiddleware, async (req, res) => {
@@ -404,6 +406,67 @@ router.get('/fetch_latest_contact', verifyTokenMiddleware, async (req, res) => {
     }
 });
 
+//! Fetch contact profile data
+router.get('/fetch_contact_data/:contactProfileId', verifyTokenMiddleware, async (req, res) => {
+    try {
+        const contactProfileId = req.params.contactProfileId;
+        const contactProfile = await User.findById(contactProfileId).select('-password');
+
+        if (!contactProfile) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(contactProfile);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+//! Delete a friend
+router.delete('/delete_contact/:friendId', verifyTokenMiddleware, async (req, res) => {
+    try {
+      const { friendId } = req.params;
+      const userId = req.userId; // Assuming userId is extracted from JWT token
+  
+      // Find the user by userId
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      // Find the index of the friend to delete
+      console.log(friendId)
+      const friendIndex = user.friends.findIndex(friend => friend.friend.toString() === friendId);
+      console.log(friendIndex)
+      if (friendIndex === -1) {
+        return res.status(404).json({ message: "Friend not found" });
+      }
+  
+      // Remove the friend from the array
+      user.friends.splice(friendIndex, 1);
+      await user.save();
+  
+      // Now remove the current user from the friend's friends list
+      const friendUser = await User.findById(friendId);
+      if (!friendUser) {
+        return res.status(404).json({ message: "Friend user not found" });
+      }
+  
+      const currentUserIndex = friendUser.friends.findIndex(friend => friend.friend.toString() === userId);
+      if (currentUserIndex !== -1) {
+        friendUser.friends.splice(currentUserIndex, 1);
+        await friendUser.save();
+      }
+  
+      res.status(200).json({ message: "Friend deleted successfully", deletedFriendId: friendId });
+  
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error deleting friend" });
+    }
+  });
+  
 
 
 module.exports = router;

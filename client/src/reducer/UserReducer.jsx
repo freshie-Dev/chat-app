@@ -123,6 +123,17 @@ const userReducer = (state, action) => {
       };
       break;
 
+    case 'DELETE_SINGLE_CONTACT':
+      let updatedContactArray = state.contacts.filter (contact => {
+        return contact._id !== action.payload
+      })
+
+      return {
+        ...state,
+        contacts: updatedContactArray
+      }
+      break;
+
     case "RESET_USER_STATE":
       localStorage.clear();
       return {

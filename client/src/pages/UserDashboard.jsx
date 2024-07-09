@@ -8,10 +8,11 @@ import { useUser } from '../context/UserContext'
 import { io } from 'socket.io-client'
 import Welcome from '../components/user/welcome/Welcome'
 import { useStyle } from '../context/StylesContext'
+import ContactProfile from '../components/user/contact-profile/ContactProfile'
 
 const UserDashboard = () => {
   const {selectedChat } = useUser()
-  const {showSlider, setShowSlider} = useStyle()
+  const {showSlider, setShowSlider, showContactProfile, contactProfileId} = useStyle()
 
   useEffect(() => {
     return () => {
@@ -34,10 +35,16 @@ const UserDashboard = () => {
         </header>
         
         <section>
-          {!selectedChat ? <Welcome /> : <>
+          {showContactProfile ? <ContactProfile contactId={contactProfileId} /> 
+          : !selectedChat ?  <Welcome /> : 
+          <>
             <Messages />
             <ChatInput />
-          </>}
+          </>
+          }
+          {
+          
+          }
 
         </section>
     </Layout>
